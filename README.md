@@ -21,10 +21,14 @@ WasteLess/
     │   │   ├── theme/        # Colors, typography, spacing, ThemeData
     │   │   └── widgets/      # Shared UI (logo, buttons, feedback)
     │   └── features/
-    │       └── onboarding/
-    │           └── presentation/
-    │               ├── pages/    # Welcome, role selection
-    │               └── widgets/  # Onboarding-specific components
+    │       ├── onboarding/
+    │       │   └── presentation/
+    │       │       ├── pages/    # Welcome, role selection
+    │       │       └── widgets/  # Onboarding-specific components
+    │       └── business/
+    │           ├── data/         # Offer repository (in-memory for now)
+    │           ├── domain/       # Business offer model
+    │           └── presentation/ # Dashboard, tab shell, widgets
     └── test/                 # Widget tests
 ```
 
@@ -38,6 +42,11 @@ without disturbing the rest of the app.
    and the “Let’s get started” call to action.
 2. **Role selection** — choose between the client (“I’m hungry”) and business
    paths. Reached from the welcome CTA; the back action returns to it.
+3. **Business dashboard** — revenue snapshot, performance stats, and the
+   published offers list with view, edit, pause and delete actions. Entering it
+   from “I’m a business” makes the business tab shell the app root, so the
+   footer navigation stays fixed across Dashboard, AI Insights, Orders and
+   Profile.
 
 ## Running
 

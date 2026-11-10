@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -14,6 +15,13 @@ class RoleSelectionPage extends StatelessWidget {
 
   void _selectRole(BuildContext context, String role) {
     showAppSnackBar(context, '$role experience is on its way.');
+  }
+
+  void _openBusinessDashboard(BuildContext context) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.businessDashboard,
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -110,7 +118,7 @@ class RoleSelectionPage extends StatelessWidget {
                             icon: Icons.storefront_rounded,
                             iconBackground: AppColors.peachTint,
                             iconColor: AppColors.clay,
-                            onTap: () => _selectRole(context, 'Business'),
+                            onTap: () => _openBusinessDashboard(context),
                           ),
                         ],
                       ),

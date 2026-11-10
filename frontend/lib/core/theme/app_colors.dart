@@ -11,12 +11,23 @@ abstract final class AppColors {
   // Surfaces.
   static const Color cream = Color(0xFFF8F4EA);
   static const Color creamDeep = Color(0xFFF1EBDE);
+  static const Color canvas = Color(0xFFF5F5F2);
   static const Color white = Color(0xFFFFFFFF);
+  static const Color divider = Color(0xFFE8EAE6);
+
+  // Status.
+  static const Color success = Color(0xFF5FBE86);
+  static const Color danger = Color(0xFFB4544A);
+  static const Color alert = Color(0xFFE0533F);
+  static const Color info = Color(0xFF3F6FA8);
+  static const Color infoTint = Color(0xFFE4ECF6);
 
   // Tints.
   static const Color clay = Color(0xFF8A5A3D);
   static const Color sageTint = Color(0xFFE5EDDE);
   static const Color peachTint = Color(0xFFFBE4D5);
+  static const Color amberTint = Color(0xFFF7E6CB);
+  static const Color amberInk = Color(0xFF9A6A1D);
   static const Color glowTint = Color(0xFFE7EEDD);
 
   // Text.
