@@ -28,6 +28,9 @@ abstract final class AppColors {
   static const Color peachTint = Color(0xFFFBE4D5);
   static const Color amberTint = Color(0xFFF7E6CB);
   static const Color amberInk = Color(0xFF9A6A1D);
+  static const Color lavenderTint = Color(0xFFF2EFF9);
+  static const Color lavenderSoft = Color(0xFFE7E1F4);
+  static const Color lavenderInk = Color(0xFF7460A8);
   static const Color glowTint = Color(0xFFE7EEDD);
 
   // Text.
