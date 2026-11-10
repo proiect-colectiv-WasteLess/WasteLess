@@ -15,22 +15,10 @@ class BusinessBottomNav extends StatelessWidget {
   final ValueChanged<int> onSelected;
 
   static const List<_NavDestination> _destinations = <_NavDestination>[
-    _NavDestination(
-      label: 'Dashboard',
-      icon: Icons.grid_view_rounded,
-    ),
-    _NavDestination(
-      label: 'AI Insights',
-      icon: Icons.auto_awesome_rounded,
-    ),
-    _NavDestination(
-      label: 'Orders',
-      icon: Icons.receipt_long_rounded,
-    ),
-    _NavDestination(
-      label: 'Profile',
-      icon: Icons.person_rounded,
-    ),
+    _NavDestination(label: 'Dashboard', icon: Icons.grid_view_rounded),
+    _NavDestination(label: 'AI Insights', icon: Icons.auto_awesome_rounded),
+    _NavDestination(label: 'Orders', icon: Icons.receipt_long_rounded),
+    _NavDestination(label: 'Profile', icon: Icons.person_rounded),
   ];
 
   @override

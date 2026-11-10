@@ -120,10 +120,7 @@ class RevenueCard extends StatelessWidget {
 }
 
 class _RevenueChart extends StatelessWidget {
-  const _RevenueChart({
-    required this.barFractions,
-    required this.dayLabels,
-  });
+  const _RevenueChart({required this.barFractions, required this.dayLabels});
 
   final List<double> barFractions;
   final List<String> dayLabels;

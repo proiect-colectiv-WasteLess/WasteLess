@@ -176,9 +176,17 @@ class _OfferDetailsSheet extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 _DetailRow(label: 'Available', value: offer.availabilityLabel),
-                const Divider(height: 1, thickness: 1, color: AppColors.divider),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: AppColors.divider,
+                ),
                 _DetailRow(label: 'Stock level', value: _stockDescription),
-                const Divider(height: 1, thickness: 1, color: AppColors.divider),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: AppColors.divider,
+                ),
                 _DetailRow(
                   label: 'Status',
                   value: paused ? 'Paused' : 'Active',
@@ -191,9 +199,8 @@ class _OfferDetailsSheet extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).pop(OfferDetailsAction.edit),
+                  onPressed: () =>
+                      Navigator.of(context).pop(OfferDetailsAction.edit),
                   icon: const Icon(Icons.edit_outlined, size: 17),
                   label: const Text('Edit offer'),
                   style: OutlinedButton.styleFrom(
@@ -213,9 +220,8 @@ class _OfferDetailsSheet extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: TextButton.icon(
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).pop(OfferDetailsAction.delete),
+                  onPressed: () =>
+                      Navigator.of(context).pop(OfferDetailsAction.delete),
                   icon: const Icon(Icons.delete_outline_rounded, size: 17),
                   label: const Text('Delete'),
                   style: TextButton.styleFrom(
