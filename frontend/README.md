@@ -7,8 +7,9 @@ for the full project layout and design notes.
 
 - `lib/core` — theme tokens (`AppColors`, `AppTypography`, `AppSpacing`),
   routing (`AppRoutes`, `AppRouter`), shared widgets and asset paths.
-- `lib/features/<feature>/presentation` — pages and feature-specific widgets.
-  Features stay isolated; shared pieces move to `core/widgets`.
+- `lib/features/<feature>` — features grow `domain/`, `data/` and
+  `presentation/` siblings as needed. Onboarding and the business dashboard
+  stay isolated; shared pieces move to `core/widgets`.
 
 The UI uses Material 3 with a custom brand theme. Typography is Plus Jakarta
 Sans, bundled as a variable font so every weight renders natively offline.
