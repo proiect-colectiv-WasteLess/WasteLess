@@ -47,6 +47,9 @@ without disturbing the rest of the app.
    from “I’m a business” makes the business tab shell the app root, so the
    footer navigation stays fixed across Dashboard, AI Insights, Orders and
    Profile.
+4. **AI Insights** — the assistant’s greeting, predicted surplus, potential
+   loss and savings, plus item-level predictions with discount
+   recommendations and a create-offer shortcut.
 
 ## Running
 
