@@ -1,17 +1,23 @@
-# frontend
+# WasteLess — Flutter app
 
-A new Flutter project.
+The client application for WasteLess. See the [repository README](../README.md)
+for the full project layout and design notes.
 
-## Getting Started
+## Architecture
 
-This project is a starting point for a Flutter application.
+- `lib/core` — theme tokens (`AppColors`, `AppTypography`, `AppSpacing`),
+  routing (`AppRoutes`, `AppRouter`), shared widgets and asset paths.
+- `lib/features/<feature>/presentation` — pages and feature-specific widgets.
+  Features stay isolated; shared pieces move to `core/widgets`.
 
-A few resources to get you started if this is your first Flutter project:
+The UI uses Material 3 with a custom brand theme. Typography is Plus Jakarta
+Sans, bundled as a variable font so every weight renders natively offline.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Commands
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+flutter run            # choose a connected device
+flutter analyze
+flutter test
+```
