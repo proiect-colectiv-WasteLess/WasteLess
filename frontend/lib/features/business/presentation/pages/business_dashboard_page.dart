@@ -126,9 +126,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                 28,
               ),
               children: <Widget>[
-                BusinessHeader(
-                  onNotificationsPressed: _openNotifications,
-                ),
+                BusinessHeader(onNotificationsPressed: _openNotifications),
                 const SizedBox(height: 20),
                 const RevenueCard(),
                 const SizedBox(height: 14),
