@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -36,7 +37,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
       _offers.where((BusinessOffer offer) => !offer.isPaused).length;
 
   void _createOffer() {
-    showAppSnackBar(context, 'Create offer is coming soon.');
+    Navigator.of(context).pushNamed(AppRoutes.createOffer);
   }
 
   void _openNotifications() {
