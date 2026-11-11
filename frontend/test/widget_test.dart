@@ -134,7 +134,7 @@ void main() {
     expect(find.text('No discount necessary yet.'), findsOneWidget);
   });
 
-  testWidgets('prediction CTA acknowledges the future offer flow', (
+  testWidgets('prediction CTA opens a prefilled create offer form', (
     WidgetTester tester,
   ) async {
     await openBusinessDashboard(tester);
@@ -147,10 +147,65 @@ void main() {
     await tester.tap(cta);
     await tester.pumpAndSettle();
 
+    expect(find.text('Create new offer'), findsOneWidget);
+    expect(find.text('Croissant rescue bag'), findsOneWidget);
+    expect(find.text('Bakery'), findsOneWidget);
     expect(
-      find.text('Offer draft for Croissants is coming soon.'),
+      find.text('A surprise mix of our flaky, freshly baked croissants.'),
       findsOneWidget,
     );
+    expect(find.text('8.00'), findsOneWidget);
+    expect(find.text('5.20'), findsOneWidget);
+    expect(find.text('€2.80 · 35%'), findsOneWidget);
+    expect(find.text('€4.68'), findsOneWidget);
+    expect(find.text('WasteLess commission: €0.52 per sale'), findsOneWidget);
+    expect(find.text('12'), findsOneWidget);
+    expect(
+      tester
+          .widget<EditableText>(find.byType(EditableText).last)
+          .controller
+          .text,
+      '16:00 – 19:00',
+    );
+    expect(find.text('Publish offer'), findsOneWidget);
+  });
+
+  testWidgets('Create Offer opens an empty form and can be dismissed', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+
+    final Finder createOffer = find.text('Create Offer');
+    await tester.ensureVisible(createOffer);
+    await tester.pumpAndSettle();
+    await tester.tap(createOffer);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Create new offer'), findsOneWidget);
+    expect(find.text('Add photo'), findsOneWidget);
+    expect(find.text('Add a cover photo'), findsOneWidget);
+    expect(find.text('Select a category'), findsOneWidget);
+    expect(find.text('Publish offer'), findsOneWidget);
+
+    final Iterable<EditableText> fields = tester.widgetList<EditableText>(
+      find.byType(EditableText),
+    );
+    expect(fields.length, 6);
+    expect(
+      fields.every((EditableText field) => field.controller.text.isEmpty),
+      isTrue,
+    );
+
+    await tester.tap(find.text('Publish offer'));
+    await tester.pump();
+    expect(
+      find.text('Complete the offer details before publishing.'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+    await tester.pumpAndSettle();
+    expect(find.text('€284.40'), findsOneWidget);
   });
 
   testWidgets('an offer can be deleted from the dashboard list', (
