@@ -7,4 +7,6 @@ abstract final class AppAssets {
   static const String predictionSandwich =
       'assets/images/prediction_sandwich.png';
   static const String predictionCake = 'assets/images/prediction_cake.png';
+  static const String draftSandwich = 'assets/images/draft_sandwich.jpg';
+  static const String draftCake = 'assets/images/draft_cake.jpg';
 }
