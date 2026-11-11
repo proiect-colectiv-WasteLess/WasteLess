@@ -15,6 +15,7 @@ class WastePredictionsRepository {
         predictedUnsold: 12,
         risk: PredictionRisk.high,
         recommendation: 'Apply 35% discount after 16:00.',
+        discountPercent: 35,
       ),
       WastePrediction(
         id: 'prediction-sandwiches',
@@ -24,6 +25,7 @@ class WastePredictionsRepository {
         predictedUnsold: 5,
         risk: PredictionRisk.medium,
         recommendation: 'Apply 20% discount after 14:30.',
+        discountPercent: 20,
       ),
       WastePrediction(
         id: 'prediction-cake',

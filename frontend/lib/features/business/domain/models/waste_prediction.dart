@@ -11,6 +11,7 @@ class WastePrediction {
     required this.predictedUnsold,
     required this.risk,
     required this.recommendation,
+    this.discountPercent = 0,
   });
 
   final String id;
@@ -22,6 +23,9 @@ class WastePrediction {
   final int predictedUnsold;
   final PredictionRisk risk;
   final String recommendation;
+
+  /// Discount suggested by the assistant, used when drafting an offer.
+  final int discountPercent;
 
   String get detailsLabel =>
       'Stock: $stock  ·  Predicted unsold: $predictedUnsold';
