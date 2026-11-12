@@ -28,7 +28,7 @@ WasteLess/
     │       └── business/
     │           ├── data/         # Offers + prediction repositories
     │           ├── domain/       # Offer, draft and prediction models
-    │           └── presentation/ # Dashboard, AI insights, create offer
+    │           └── presentation/ # Dashboard, insights, orders, offer form
     └── test/                 # Widget tests
 ```
 
@@ -53,6 +53,9 @@ without disturbing the rest of the app.
 5. **Create offer** — a form for product details, pricing and pickup windows
    with a live savings breakdown. Opens empty from the dashboard, or
    prefilled when started from an AI prediction.
+6. **Orders** — active and completed tabs. Active orders show their pickup
+   window, code, price and a validation action; validating a code confirms the
+   pickup and moves the order to the completed archive.
 
 ## Running
 
