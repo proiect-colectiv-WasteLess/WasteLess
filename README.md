@@ -25,6 +25,10 @@ WasteLess/
     │       │   └── presentation/
     │       │       ├── pages/    # Welcome, role selection
     │       │       └── widgets/  # Onboarding-specific components
+    │       ├── customer/
+    │       │   ├── data/         # Deals repository + basket/orders session
+    │       │   ├── domain/       # Deal and order models
+    │       │   └── presentation/ # Home, Explore, Product, Basket, Payment...
     │       └── business/
     │           ├── data/         # Offers + prediction repositories
     │           ├── domain/       # Offer, draft and prediction models
@@ -53,6 +57,18 @@ without disturbing the rest of the app.
 5. **Create offer** — a form for product details, pricing and pickup windows
    with a live savings breakdown. Opens empty from the dashboard, or
    prefilled when started from an AI prediction.
+
+6. **Customer home** — greeting, search, promo banner, categories and the
+   closest / almost-gone deals. Entered from "I'm hungry"; the footer (Home,
+   Explore, Orders, Profile) stays fixed and a floating basket appears once
+   something is added.
+7. **Explore** — radius, category, discount, sort and quick filters over the
+   nearby deals.
+8. **Product → Basket → Payment → Success** — deal detail with pickup info,
+   quantity stepper and savings summary, a (mock) card checkout, and the
+   pickup ticket with code.
+9. **Notifications, Orders and Profile** — alerts that deep-link to deals,
+   active orders with pickup code, and the impact card with account menu.
 
 ## Running
 
