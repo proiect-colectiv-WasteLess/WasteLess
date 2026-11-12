@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../widgets/business_bottom_nav.dart';
 import 'business_ai_insights_page.dart';
 import 'business_dashboard_page.dart';
+import 'business_orders_page.dart';
 import 'business_placeholder_page.dart';
 
 /// Root of the business experience. The footer navigation stays fixed while
@@ -22,11 +23,7 @@ class _BusinessShellPageState extends State<BusinessShellPage> {
   static const List<Widget> _pages = <Widget>[
     BusinessDashboardPage(),
     BusinessAiInsightsPage(),
-    BusinessPlaceholderPage(
-      title: 'Orders',
-      message: 'Customer rescues and pickup updates will show up here.',
-      icon: Icons.receipt_long_rounded,
-    ),
+    BusinessOrdersPage(),
     BusinessPlaceholderPage(
       title: 'Profile',
       message: 'Manage your business details, hours and payout settings here.',
