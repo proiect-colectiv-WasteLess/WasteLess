@@ -93,10 +93,12 @@ void main() {
   ) async {
     await openBusinessDashboard(tester);
 
-    await tester.tap(find.text('Orders'));
+    await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
     expect(
-      find.text('Customer rescues and pickup updates will show up here.'),
+      find.text(
+        'Manage your business details, hours and payout settings here.',
+      ),
       findsOneWidget,
     );
 
@@ -206,6 +208,59 @@ void main() {
     await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
     await tester.pumpAndSettle();
     expect(find.text('€284.40'), findsOneWidget);
+  });
+
+  testWidgets('Orders tab lists active orders and switches to completed', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+    await tester.tap(find.text('Orders'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Order management'), findsOneWidget);
+    expect(find.text('Active · 3'), findsOneWidget);
+    expect(find.text('ORDER #WL-8042'), findsOneWidget);
+    expect(find.text('1 × Bakery surprise bag'), findsOneWidget);
+    expect(find.text('Pickup: Today, 17:30–19:00 · Code 4862'), findsOneWidget);
+    expect(find.text('€7.00'), findsOneWidget);
+    expect(find.text('Validate code / QR'), findsNWidgets(3));
+
+    await tester.tap(find.text('Completed'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 × Pastry selection'), findsOneWidget);
+    expect(find.text('2 × Croissant rescue bag'), findsOneWidget);
+    expect(find.text('Validate code / QR'), findsNothing);
+    expect(find.text('Collected'), findsNWidgets(2));
+
+    await tester.tap(find.text('Active · 3'));
+    await tester.pumpAndSettle();
+    expect(find.text('ORDER #WL-8042'), findsOneWidget);
+  });
+
+  testWidgets('validating an order moves it to the completed tab', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+    await tester.tap(find.text('Orders'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Validate code / QR').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Validate pickup'), findsOneWidget);
+    expect(find.text('4862'), findsOneWidget);
+
+    await tester.tap(find.text('Confirm pickup'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Order #WL-8042 completed.'), findsOneWidget);
+    expect(find.text('1 × Bakery surprise bag'), findsNothing);
+    expect(find.text('Active · 2'), findsOneWidget);
+
+    await tester.tap(find.text('Completed'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 × Bakery surprise bag'), findsOneWidget);
+    expect(find.text('Collected'), findsNWidgets(3));
   });
 
   testWidgets('an offer can be deleted from the dashboard list', (
