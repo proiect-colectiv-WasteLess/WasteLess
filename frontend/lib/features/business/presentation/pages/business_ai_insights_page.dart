@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/widgets/app_snack_bar.dart';
 import '../../data/waste_predictions_repository.dart';
+import '../../domain/models/offer_draft.dart';
 import '../../domain/models/waste_prediction.dart';
 import '../widgets/ai_assistant_banner.dart';
 import '../widgets/prediction_card.dart';
@@ -84,9 +85,9 @@ class BusinessAiInsightsPage extends StatelessWidget {
                     in predictions) ...<Widget>[
                   PredictionCard(
                     prediction: prediction,
-                    onCreateOffer: () => showAppSnackBar(
-                      context,
-                      'Offer draft for ${prediction.item} is coming soon.',
+                    onCreateOffer: () => Navigator.of(context).pushNamed(
+                      AppRoutes.createOffer,
+                      arguments: OfferDraft.fromPrediction(prediction),
                     ),
                   ),
                   const SizedBox(height: 10),

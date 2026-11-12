@@ -26,9 +26,9 @@ WasteLess/
     │       │       ├── pages/    # Welcome, role selection
     │       │       └── widgets/  # Onboarding-specific components
     │       └── business/
-    │           ├── data/         # Offer repository (in-memory for now)
-    │           ├── domain/       # Business offer model
-    │           └── presentation/ # Dashboard, tab shell, widgets
+    │           ├── data/         # Offers + prediction repositories
+    │           ├── domain/       # Offer, draft and prediction models
+    │           └── presentation/ # Dashboard, AI insights, create offer
     └── test/                 # Widget tests
 ```
 
@@ -50,6 +50,9 @@ without disturbing the rest of the app.
 4. **AI Insights** — the assistant’s greeting, predicted surplus, potential
    loss and savings, plus item-level predictions with discount
    recommendations and a create-offer shortcut.
+5. **Create offer** — a form for product details, pricing and pickup windows
+   with a live savings breakdown. Opens empty from the dashboard, or
+   prefilled when started from an AI prediction.
 
 ## Running
 
