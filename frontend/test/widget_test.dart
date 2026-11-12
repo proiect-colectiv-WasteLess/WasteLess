@@ -105,6 +105,54 @@ void main() {
     expect(find.text('€284.40'), findsOneWidget);
   });
 
+  testWidgets('AI Insights tab shows predictions and the assistant summary', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+
+    await tester.tap(find.text('AI Insights'));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Good afternoon, let's waste less."), findsOneWidget);
+    expect(find.text('PREDICTED SURPLUS'), findsOneWidget);
+    expect(find.text('POTENTIAL LOSS'), findsOneWidget);
+    expect(find.text('YOU COULD SAVE'), findsOneWidget);
+    expect(find.text("Today's predictions"), findsOneWidget);
+    expect(find.text('Updated 2m ago'), findsOneWidget);
+    expect(find.text('Croissants'), findsOneWidget);
+    expect(find.text('HIGH'), findsOneWidget);
+    expect(find.text('MEDIUM'), findsOneWidget);
+    expect(find.text('AI RECOMMENDATION'), findsWidgets);
+
+    await tester.scrollUntilVisible(
+      find.text('Chocolate cake'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Chocolate cake'), findsOneWidget);
+    expect(find.text('LOW'), findsOneWidget);
+    expect(find.text('No discount necessary yet.'), findsOneWidget);
+  });
+
+  testWidgets('prediction CTA acknowledges the future offer flow', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+    await tester.tap(find.text('AI Insights'));
+    await tester.pumpAndSettle();
+
+    final Finder cta = find.text('Create offer from prediction').first;
+    await tester.ensureVisible(cta);
+    await tester.pumpAndSettle();
+    await tester.tap(cta);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Offer draft for Croissants is coming soon.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('an offer can be deleted from the dashboard list', (
     WidgetTester tester,
   ) async {

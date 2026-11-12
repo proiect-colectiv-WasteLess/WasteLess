@@ -14,6 +14,11 @@ for the full project layout and design notes.
 The UI uses Material 3 with a custom brand theme. Typography is Plus Jakarta
 Sans, bundled as a variable font so every weight renders natively offline.
 
+## Credits
+
+Prediction illustrations use [Twemoji](https://github.com/jdecked/twemoji)
+graphics, licensed under CC-BY 4.0.
+
 ## Commands
 
 ```bash

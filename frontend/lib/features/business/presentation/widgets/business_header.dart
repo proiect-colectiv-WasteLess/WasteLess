@@ -51,9 +51,7 @@ class BusinessHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        _NotificationsButton(
-          onPressed: onNotificationsPressed,
-        ),
+        _NotificationsButton(onPressed: onNotificationsPressed),
       ],
     );
   }
@@ -112,9 +110,7 @@ class _NotificationsButton extends StatelessWidget {
       label: 'Notifications',
       child: Material(
         color: AppColors.white,
-        shape: const CircleBorder(
-          side: BorderSide(color: AppColors.divider),
-        ),
+        shape: const CircleBorder(side: BorderSide(color: AppColors.divider)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onPressed,

@@ -38,11 +38,7 @@ class CreateOfferButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Icon(
-                  Icons.add_rounded,
-                  size: 21,
-                  color: AppColors.amber,
-                ),
+                const Icon(Icons.add_rounded, size: 21, color: AppColors.amber),
                 const SizedBox(width: 7),
                 Text(
                   'Create Offer',

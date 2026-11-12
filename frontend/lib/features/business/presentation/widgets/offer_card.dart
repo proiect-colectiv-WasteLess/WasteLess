@@ -143,9 +143,7 @@ class OfferCard extends StatelessWidget {
               Expanded(
                 child: _OfferAction(
                   label: paused ? 'Resume' : 'Pause',
-                  icon: paused
-                      ? Icons.play_arrow_rounded
-                      : Icons.pause_rounded,
+                  icon: paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
                   color: AppColors.amberInk,
                   onTap: onTogglePause,
                 ),

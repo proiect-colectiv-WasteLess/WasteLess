@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/business_bottom_nav.dart';
+import 'business_ai_insights_page.dart';
 import 'business_dashboard_page.dart';
 import 'business_placeholder_page.dart';
 
@@ -20,12 +21,7 @@ class _BusinessShellPageState extends State<BusinessShellPage> {
 
   static const List<Widget> _pages = <Widget>[
     BusinessDashboardPage(),
-    BusinessPlaceholderPage(
-      title: 'AI Insights',
-      message:
-          'Demand forecasts, waste trends and pricing tips will show up here.',
-      icon: Icons.auto_awesome_rounded,
-    ),
+    BusinessAiInsightsPage(),
     BusinessPlaceholderPage(
       title: 'Orders',
       message: 'Customer rescues and pickup updates will show up here.',
