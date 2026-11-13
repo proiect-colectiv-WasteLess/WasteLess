@@ -9,4 +9,8 @@ abstract final class AppAssets {
   static const String predictionCake = 'assets/images/prediction_cake.png';
   static const String draftSandwich = 'assets/images/draft_sandwich.jpg';
   static const String draftCake = 'assets/images/draft_cake.jpg';
+  static const String dealBakery = 'assets/images/deal_bakery.jpg';
+  static const String dealPastry = 'assets/images/deal_pastry.jpg';
+  static const String dealBowl = 'assets/images/deal_bowl.jpg';
+  static const String dealSalad = 'assets/images/deal_salad.jpg';
 }

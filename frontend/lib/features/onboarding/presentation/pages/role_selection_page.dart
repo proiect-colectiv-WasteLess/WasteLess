@@ -7,14 +7,16 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_back_button.dart';
 import '../../../../core/widgets/app_logo.dart';
-import '../../../../core/widgets/app_snack_bar.dart';
 import '../widgets/role_option_card.dart';
 
 class RoleSelectionPage extends StatelessWidget {
   const RoleSelectionPage({super.key});
 
-  void _selectRole(BuildContext context, String role) {
-    showAppSnackBar(context, '$role experience is on its way.');
+  void _openCustomerHome(BuildContext context) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.customerHome,
+      (Route<dynamic> route) => false,
+    );
   }
 
   void _openBusinessDashboard(BuildContext context) {
@@ -108,7 +110,7 @@ class RoleSelectionPage extends StatelessWidget {
                             icon: Icons.restaurant_rounded,
                             iconBackground: AppColors.sageTint,
                             iconColor: AppColors.forest,
-                            onTap: () => _selectRole(context, 'Client'),
+                            onTap: () => _openCustomerHome(context),
                           ),
                           const SizedBox(height: 14),
                           RoleOptionCard(

@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 import '../../features/business/domain/models/offer_draft.dart';
 import '../../features/business/presentation/pages/business_shell_page.dart';
 import '../../features/business/presentation/pages/create_offer_page.dart';
+import '../../features/customer/domain/models/customer_order.dart';
+import '../../features/customer/domain/models/deal.dart';
+import '../../features/customer/presentation/pages/cart_page.dart';
+import '../../features/customer/presentation/pages/checkout_page.dart';
+import '../../features/customer/presentation/pages/customer_shell_page.dart';
+import '../../features/customer/presentation/pages/notifications_page.dart';
+import '../../features/customer/presentation/pages/product_page.dart';
+import '../../features/customer/presentation/pages/success_page.dart';
 import '../../features/onboarding/presentation/pages/role_selection_page.dart';
 import '../../features/onboarding/presentation/pages/welcome_page.dart';
 import 'app_routes.dart';
@@ -20,6 +28,32 @@ abstract final class AppRouter {
         );
       case AppRoutes.businessDashboard:
         return _page(const BusinessShellPage(), settings);
+      case AppRoutes.customerHome:
+        final Object? tab = settings.arguments;
+        return _page(
+          CustomerShellPage(
+            initialTab: tab is int ? tab : CustomerShellPage.homeTab,
+          ),
+          settings,
+        );
+      case AppRoutes.customerProduct:
+        final Object? deal = settings.arguments;
+        if (deal is! Deal) {
+          return _page(const CustomerShellPage(), settings);
+        }
+        return _page(ProductPage(deal: deal), settings);
+      case AppRoutes.customerCart:
+        return _page(const CartPage(), settings);
+      case AppRoutes.customerCheckout:
+        return _page(const CheckoutPage(), settings);
+      case AppRoutes.customerSuccess:
+        final Object? order = settings.arguments;
+        if (order is! CustomerOrder) {
+          return _page(const CustomerShellPage(), settings);
+        }
+        return _page(SuccessPage(order: order), settings);
+      case AppRoutes.customerNotifications:
+        return _page(const NotificationsPage(), settings);
       case AppRoutes.roleSelection:
         return _page(const RoleSelectionPage(), settings);
       case AppRoutes.welcome:
