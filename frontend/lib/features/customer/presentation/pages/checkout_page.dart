@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_primary_button.dart';
-import '../../data/customer_session.dart';
-import '../../domain/models/customer_order.dart';
+import '../../../business/domain/models/business_order.dart';
 import '../../domain/models/deal.dart';
 import '../widgets/customer_page_header.dart';
 
@@ -27,7 +27,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String _method = 'Card';
 
   void _pay() {
-    final CustomerOrder? order = CustomerSession.instance.placeOrder();
+    final BusinessOrder? order = AppStoreScope.read(context).placeBasketOrder();
     if (order == null) {
       return;
     }
@@ -40,7 +40,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    final CustomerSession session = CustomerSession.instance;
+    final AppStore session = AppStoreScope.of(context);
     final Deal? deal = session.basketDeal;
     final String total = formatEuro(session.basketTotal);
 

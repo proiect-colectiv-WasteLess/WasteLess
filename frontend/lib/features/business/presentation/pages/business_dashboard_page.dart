@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
-import '../../data/business_offers_repository.dart';
 import '../../domain/models/business_offer.dart';
 import '../widgets/business_header.dart';
 import '../widgets/create_offer_button.dart';
@@ -24,18 +24,6 @@ class BusinessDashboardPage extends StatefulWidget {
 }
 
 class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
-  final BusinessOffersRepository _repository = const BusinessOffersRepository();
-  late final List<BusinessOffer> _offers;
-
-  @override
-  void initState() {
-    super.initState();
-    _offers = List<BusinessOffer>.of(_repository.loadOffers());
-  }
-
-  int get _activeOfferCount =>
-      _offers.where((BusinessOffer offer) => !offer.isPaused).length;
-
   void _createOffer() {
     Navigator.of(context).pushNamed(AppRoutes.createOffer);
   }
@@ -66,7 +54,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
       return;
     }
 
-    _replaceOffer(updated);
+    AppStoreScope.read(context).updateOffer(updated);
     showAppSnackBar(context, '“${updated.title}” updated.');
   }
 
@@ -76,34 +64,25 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
       return;
     }
 
-    setState(() => _offers.removeWhere((item) => item.id == offer.id));
+    AppStoreScope.read(context).deleteOffer(offer.id);
     showAppSnackBar(context, '“${offer.title}” deleted.');
   }
 
   void _togglePause(BusinessOffer offer) {
-    final BusinessOffer updated = offer.copyWith(isPaused: !offer.isPaused);
-    _replaceOffer(updated);
+    AppStoreScope.read(context).toggleOfferPaused(offer.id);
     showAppSnackBar(
       context,
-      updated.isPaused
-          ? '“${offer.title}” paused.'
-          : '“${offer.title}” is live again.',
+      offer.isPaused
+          ? '“${offer.title}” is live again.'
+          : '“${offer.title}” paused.',
     );
-  }
-
-  void _replaceOffer(BusinessOffer updated) {
-    setState(() {
-      final int index = _offers.indexWhere(
-        (BusinessOffer item) => item.id == updated.id,
-      );
-      if (index != -1) {
-        _offers[index] = updated;
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppStore store = AppStoreScope.of(context);
+    final List<BusinessOffer> offers = store.offers;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
@@ -131,16 +110,16 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                 const SizedBox(height: 20),
                 const RevenueCard(),
                 const SizedBox(height: 14),
-                _StatsGrid(activeOffers: _activeOfferCount),
+                _StatsGrid(activeOffers: store.activeOffers.length),
                 const SizedBox(height: 18),
                 CreateOfferButton(onPressed: _createOffer),
                 const SizedBox(height: 26),
-                _OffersHeader(count: _offers.length),
+                _OffersHeader(count: offers.length),
                 const SizedBox(height: 12),
-                if (_offers.isEmpty)
+                if (offers.isEmpty)
                   const _EmptyOffers()
                 else
-                  for (final BusinessOffer offer in _offers) ...<Widget>[
+                  for (final BusinessOffer offer in offers) ...<Widget>[
                     OfferCard(
                       offer: offer,
                       onView: () => _viewOffer(offer),

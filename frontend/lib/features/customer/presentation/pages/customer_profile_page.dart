@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/auth/logout.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
@@ -58,6 +60,8 @@ class CustomerProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 14),
+              _LogoutTile(onTap: () => logout(context)),
             ],
           ),
         ),
@@ -105,7 +109,7 @@ class _ProfileHead extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'Noa Martins',
+                AppStore.customerName,
                 style: AppTypography.style(
                   size: 18,
                   weight: FontWeight.w800,
@@ -115,7 +119,7 @@ class _ProfileHead extends StatelessWidget {
               ),
               const SizedBox(height: 3),
               Text(
-                'noa@wasteless.app',
+                AppStore.customerEmail,
                 style: AppTypography.style(size: 11.5, color: AppColors.muted),
               ),
             ],
@@ -278,6 +282,62 @@ class _LevelBar extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _LogoutTile extends StatelessWidget {
+  const _LogoutTile({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.white,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 33,
+                height: 33,
+                decoration: BoxDecoration(
+                  color: AppColors.danger.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.logout_rounded,
+                  size: 17,
+                  color: AppColors.danger,
+                ),
+              ),
+              const SizedBox(width: 11),
+              Text(
+                'Log out',
+                style: AppTypography.style(
+                  size: 12.5,
+                  weight: FontWeight.w700,
+                  color: AppColors.danger,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                'Switch role',
+                style: AppTypography.style(size: 10, color: AppColors.muted),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../features/business/domain/models/business_order.dart';
 import '../../features/business/domain/models/offer_draft.dart';
 import '../../features/business/presentation/pages/business_shell_page.dart';
 import '../../features/business/presentation/pages/create_offer_page.dart';
-import '../../features/customer/domain/models/customer_order.dart';
 import '../../features/customer/domain/models/deal.dart';
 import '../../features/customer/presentation/pages/cart_page.dart';
 import '../../features/customer/presentation/pages/checkout_page.dart';
@@ -48,7 +48,7 @@ abstract final class AppRouter {
         return _page(const CheckoutPage(), settings);
       case AppRoutes.customerSuccess:
         final Object? order = settings.arguments;
-        if (order is! CustomerOrder) {
+        if (order is! BusinessOrder) {
           return _page(const CustomerShellPage(), settings);
         }
         return _page(SuccessPage(order: order), settings);

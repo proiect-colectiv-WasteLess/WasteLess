@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../data/deals_repository.dart';
 import '../../domain/models/deal.dart';
 import '../widgets/customer_page_header.dart';
 
@@ -40,14 +40,12 @@ class NotificationsPage extends StatelessWidget {
   ];
 
   void _open(BuildContext context, Deal deal) {
-    Navigator.of(
-      context,
-    ).pushNamed(AppRoutes.customerProduct, arguments: deal);
+    Navigator.of(context).pushNamed(AppRoutes.customerProduct, arguments: deal);
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Deal> deals = const DealsRepository().loadDeals();
+    final List<Deal> deals = AppStoreScope.of(context).deals;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -70,7 +68,11 @@ class NotificationsPage extends StatelessWidget {
                     showBack: true,
                   ),
                   const SizedBox(height: 16),
-                  _FeatureCard(onView: () => _open(context, deals[2])),
+                  _FeatureCard(
+                    onView: deals.isEmpty
+                        ? null
+                        : () => _open(context, deals.first),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 22, bottom: 10),
                     child: Text(
@@ -86,7 +88,9 @@ class NotificationsPage extends StatelessWidget {
                   for (int i = 0; i < _notices.length; i++) ...<Widget>[
                     _NoticeTile(
                       notice: _notices[i],
-                      onTap: () => _open(context, deals[i]),
+                      onTap: deals.isEmpty
+                          ? null
+                          : () => _open(context, deals[i % deals.length]),
                     ),
                     const SizedBox(height: 9),
                   ],
@@ -121,7 +125,7 @@ class _Notice {
 class _FeatureCard extends StatelessWidget {
   const _FeatureCard({required this.onView});
 
-  final VoidCallback onView;
+  final VoidCallback? onView;
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +220,7 @@ class _NoticeTile extends StatelessWidget {
   const _NoticeTile({required this.notice, required this.onTap});
 
   final _Notice notice;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

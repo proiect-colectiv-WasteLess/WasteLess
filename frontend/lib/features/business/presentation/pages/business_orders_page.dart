@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
-import '../../data/business_orders_repository.dart';
 import '../../domain/models/business_order.dart';
 import '../widgets/order_card.dart';
 import '../widgets/order_tabs.dart';
 import '../widgets/order_validation_sheet.dart';
 
 /// Orders tab: active pickups and the completed-order archive.
+///
+/// Both lists come from the shared store, so a customer order or a pickup
+/// validated elsewhere is reflected here immediately.
 class BusinessOrdersPage extends StatefulWidget {
   const BusinessOrdersPage({super.key});
 
@@ -19,23 +22,7 @@ class BusinessOrdersPage extends StatefulWidget {
 }
 
 class _BusinessOrdersPageState extends State<BusinessOrdersPage> {
-  final BusinessOrdersRepository _repository = const BusinessOrdersRepository();
-  late final List<BusinessOrder> _orders;
   int _selectedTab = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _orders = List<BusinessOrder>.of(_repository.loadOrders());
-  }
-
-  List<BusinessOrder> get _activeOrders => _orders
-      .where((BusinessOrder order) => !order.isCompleted)
-      .toList(growable: false);
-
-  List<BusinessOrder> get _completedOrders => _orders
-      .where((BusinessOrder order) => order.isCompleted)
-      .toList(growable: false);
 
   Future<void> _validateOrder(BusinessOrder order) async {
     final bool confirmed = await showOrderValidationSheet(context, order);
@@ -43,21 +30,15 @@ class _BusinessOrdersPageState extends State<BusinessOrdersPage> {
       return;
     }
 
-    setState(() {
-      final int index = _orders.indexWhere(
-        (BusinessOrder item) => item.id == order.id,
-      );
-      if (index != -1) {
-        _orders[index] = order.copyWith(isCompleted: true);
-      }
-    });
+    AppStoreScope.read(context).completeOrder(order.id);
     showAppSnackBar(context, 'Order #${order.id} completed.');
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<BusinessOrder> activeOrders = _activeOrders;
-    final List<BusinessOrder> completedOrders = _completedOrders;
+    final AppStore store = AppStoreScope.of(context);
+    final List<BusinessOrder> activeOrders = store.activeOrders;
+    final List<BusinessOrder> completedOrders = store.completedOrders;
     final List<BusinessOrder> visibleOrders = _selectedTab == 0
         ? activeOrders
         : completedOrders;

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_primary_button.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
-import '../../data/customer_session.dart';
 import '../../domain/models/deal.dart';
 import '../widgets/deal_card.dart';
 
@@ -16,7 +16,7 @@ class ProductPage extends StatelessWidget {
   final Deal deal;
 
   void _addToBasket(BuildContext context) {
-    CustomerSession.instance.addToBasket(deal);
+    AppStoreScope.read(context).addToBasket(deal);
     Navigator.of(context).pushNamed(AppRoutes.customerCart);
   }
 
@@ -139,12 +139,14 @@ class ProductPage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 18),
-                      const _Block(
+                      _Block(
                         title: 'What you’ll get',
                         child: _BodyText(
-                          'A delicious selection of today’s freshly made '
-                          'favorites. The exact mix is a surprise—it’s '
-                          'part of the fun, and always great value.',
+                          deal.description.isNotEmpty
+                              ? deal.description
+                              : 'A delicious selection of today’s freshly made '
+                                    'favorites. The exact mix is a surprise—it’s '
+                                    'part of the fun, and always great value.',
                         ),
                       ),
                       _Block(
@@ -285,7 +287,10 @@ class _InfoChip extends StatelessWidget {
         children: <Widget>[
           Icon(icon, size: 17, color: AppColors.ink),
           const SizedBox(width: 6),
-          Text(label, style: AppTypography.style(size: 12, color: AppColors.ink)),
+          Text(
+            label,
+            style: AppTypography.style(size: 12, color: AppColors.ink),
+          ),
         ],
       ),
     );
@@ -425,10 +430,7 @@ class _PickupLocation extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
-              textStyle: AppTypography.style(
-                size: 12,
-                weight: FontWeight.w700,
-              ),
+              textStyle: AppTypography.style(size: 12, weight: FontWeight.w700),
             ),
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,

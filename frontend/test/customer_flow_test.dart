@@ -68,13 +68,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('2 delicious deals'), findsOneWidget);
 
-    await tester.tap(find.text('5 km'));
-    await tester.pumpAndSettle();
-    expect(find.text('4 delicious deals'), findsOneWidget);
-
     await tester.tap(find.text('500 m'));
     await tester.pumpAndSettle();
     expect(find.text('1 delicious deals'), findsOneWidget);
+
+    await tester.tap(find.text('5 km'));
+    await tester.pumpAndSettle();
+    expect(find.text('2 delicious deals'), findsOneWidget);
   });
 
   testWidgets('rescuing a deal runs product, basket, payment and success', (
@@ -84,7 +84,7 @@ void main() {
 
     await tester.tap(find.text('Explore'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Fresh bakery surprise bag'));
+    await tester.tap(find.text('Croissant rescue bag'));
     await tester.pumpAndSettle();
     expect(find.text('Get directions'), findsOneWidget);
 
@@ -97,12 +97,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Secure payment'), findsOneWidget);
 
-    await tapScrolled(tester, find.text('Pay €3.50'));
+    await tapScrolled(tester, find.text('Pay €3.20'));
     expect(find.text('RESCUE CONFIRMED'), findsOneWidget);
     expect(find.text('Show this code at pickup'), findsOneWidget);
 
     await tapScrolled(tester, find.text('View my order'));
     expect(find.text('My orders'), findsOneWidget);
-    expect(find.text('READY FOR PICKUP'), findsNWidgets(2));
+    expect(find.text('1 × Croissant rescue bag'), findsOneWidget);
+    expect(find.text('READY FOR PICKUP'), findsWidgets);
   });
 }

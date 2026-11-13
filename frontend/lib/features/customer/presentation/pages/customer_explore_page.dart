@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
-import '../../data/deals_repository.dart';
 import '../../domain/models/deal.dart';
 import '../widgets/customer_page_header.dart';
 import '../widgets/customer_search_field.dart';
@@ -53,7 +53,6 @@ class _CustomerExplorePageState extends State<CustomerExplorePage> {
     'Before 19:00',
   ];
 
-  final List<Deal> _deals = const DealsRepository().loadDeals();
   String _query = '';
   String _radius = '1 km';
   String _category = 'All';
@@ -79,14 +78,14 @@ class _CustomerExplorePageState extends State<CustomerExplorePage> {
     return null;
   }
 
-  List<Deal> get _results {
+  List<Deal> _resultsFor(List<Deal> deals) {
     final String query = _query.trim().toLowerCase();
     final double radius = _radii[_radius] ?? 10;
     final int discountLimit =
         int.tryParse(RegExp(r'\d+').firstMatch(_discount)?.group(0) ?? '') ?? 0;
     final DealCategory? category = _categoryOf(_category);
 
-    final List<Deal> list = _deals.where((Deal d) {
+    final List<Deal> list = deals.where((Deal d) {
       if (!'${d.name} ${d.shop}'.toLowerCase().contains(query)) {
         return false;
       }
@@ -125,7 +124,8 @@ class _CustomerExplorePageState extends State<CustomerExplorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Deal> results = _results;
+    final List<Deal> deals = AppStoreScope.of(context).deals;
+    final List<Deal> results = _resultsFor(deals);
 
     return SafeArea(
       bottom: false,
@@ -378,7 +378,9 @@ class _ChipRow extends StatelessWidget {
           final bool active = option == selected;
           final Color fill = active
               ? (warm ? AppColors.amber : AppColors.forest)
-              : (warm ? AppColors.amberTint.withValues(alpha: 0.4) : AppColors.white);
+              : (warm
+                    ? AppColors.amberTint.withValues(alpha: 0.4)
+                    : AppColors.white);
           final Color border = active
               ? (warm ? AppColors.amber : AppColors.forest)
               : (warm ? AppColors.amberTint : AppColors.divider);

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_primary_button.dart';
-import '../../data/customer_session.dart';
 import '../../domain/models/deal.dart';
 import '../widgets/customer_page_header.dart';
 
@@ -14,7 +14,7 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CustomerSession session = CustomerSession.instance;
+    final AppStore session = AppStoreScope.of(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -48,7 +48,7 @@ class CartPage extends StatelessWidget {
                         _CartItem(
                           deal: deal,
                           quantity: session.basketQuantity,
-                          onChanged: session.setQuantity,
+                          onChanged: session.setBasketQuantity,
                         ),
                         const _PlanetNote(),
                         _Summary(session: session, deal: deal),
@@ -340,7 +340,7 @@ class _PlanetNote extends StatelessWidget {
 class _Summary extends StatelessWidget {
   const _Summary({required this.session, required this.deal});
 
-  final CustomerSession session;
+  final AppStore session;
   final Deal deal;
 
   @override
@@ -394,10 +394,7 @@ class _Summary extends StatelessWidget {
               letterSpacing: -0.4,
               color: AppColors.forest,
             ),
-            labelStyle: AppTypography.style(
-              size: 13,
-              weight: FontWeight.w700,
-            ),
+            labelStyle: AppTypography.style(size: 13, weight: FontWeight.w700),
           ),
         ],
       ),

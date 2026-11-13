@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/constants/app_assets.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -142,6 +144,23 @@ class _CreateOfferPageState extends State<CreateOfferPage> {
       showAppSnackBar(context, 'Complete the offer details before publishing.');
       return;
     }
+
+    final String category = _category!;
+    final String? photoAsset = _photoAsset;
+    final String imageAsset =
+        photoAsset ??
+        (category == 'Bakery' ? AppAssets.offerCroissant : AppAssets.dealBowl);
+
+    AppStoreScope.read(context).createOffer(
+      title: name,
+      category: category,
+      description: _descriptionController.text.trim(),
+      originalPrice: original,
+      price: price,
+      quantity: quantity,
+      pickupWindow: _pickupWindowController.text.trim(),
+      imageAsset: imageAsset,
+    );
 
     showAppSnackBar(context, '“$name” published.');
     Navigator.of(context).pop();

@@ -26,6 +26,35 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> openCustomerHome(WidgetTester tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm hungry"));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> logoutToWelcome(WidgetTester tester) async {
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+
+    final Finder logoutTile = find.text('Log out');
+    await tester.scrollUntilVisible(
+      logoutTile,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(logoutTile);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Log out?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Log out'));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Let's get started"), findsOneWidget);
+  }
+
   testWidgets('welcome screen presents the brand and primary CTA', (
     WidgetTester tester,
   ) async {
@@ -95,12 +124,9 @@ void main() {
 
     await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
-    expect(
-      find.text(
-        'Manage your business details, hours and payout settings here.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('freshbakery@wasteless.app'), findsOneWidget);
+    expect(find.text('VERIFIED PARTNER'), findsOneWidget);
+    expect(find.text('Log out'), findsOneWidget);
 
     await tester.tap(find.text('Dashboard'));
     await tester.pumpAndSettle();
@@ -300,5 +326,196 @@ void main() {
 
     expect(find.text('Morning rescue box'), findsOneWidget);
     expect(find.text('Croissant rescue bag'), findsNothing);
+  });
+
+  testWidgets('a published offer appears for the customer after logout', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+
+    final Finder createOffer = find.text('Create Offer');
+    await tester.ensureVisible(createOffer);
+    await tester.pumpAndSettle();
+    await tester.tap(createOffer);
+    await tester.pumpAndSettle();
+
+    final Finder fields = find.byType(EditableText);
+    await tester.enterText(fields.at(0), 'Late-night pastry box');
+    await tester.enterText(fields.at(1), 'A box of today’s leftover pastries.');
+    await tester.enterText(fields.at(2), '8.00');
+    await tester.enterText(fields.at(3), '4.00');
+    await tester.enterText(fields.at(4), '4');
+    await tester.enterText(fields.at(5), '19:00 – 21:00');
+
+    final Finder categoryField = find.byType(DropdownButton<String>);
+    await tester.ensureVisible(categoryField);
+    await tester.pumpAndSettle();
+    await tester.tap(categoryField);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bakery').last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Publish offer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('“Late-night pastry box” published.'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Late-night pastry box'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Late-night pastry box'), findsOneWidget);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm hungry"));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Late-night pastry box'), findsOneWidget);
+  });
+
+  testWidgets('edits and deletes are reflected on the customer side', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+
+    final Finder editAction = find.text('Edit').first;
+    await tester.ensureVisible(editAction);
+    await tester.pumpAndSettle();
+    await tester.tap(editAction);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'Morning rescue box');
+    await tester.tap(find.text('Save changes'));
+    await tester.pumpAndSettle();
+
+    final Finder deleteAction = find.text('Delete').last;
+    await tester.ensureVisible(deleteAction);
+    await tester.pumpAndSettle();
+    await tester.tap(deleteAction);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete offer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pastry selection'), findsNothing);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm hungry"));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Morning rescue box'), findsOneWidget);
+    expect(find.text('Pastry selection'), findsNothing);
+  });
+
+  testWidgets('pausing an offer hides it from the customer until resumed', (
+    WidgetTester tester,
+  ) async {
+    await openBusinessDashboard(tester);
+
+    final Finder pauseAction = find.text('Pause').first;
+    await tester.ensureVisible(pauseAction);
+    await tester.pumpAndSettle();
+    await tester.tap(pauseAction);
+    await tester.pumpAndSettle();
+
+    expect(find.text('“Croissant rescue bag” paused.'), findsOneWidget);
+    expect(find.text('Resume'), findsOneWidget);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm hungry"));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Croissant rescue bag'), findsNothing);
+    expect(find.text('Pastry selection'), findsOneWidget);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm a business"));
+    await tester.pumpAndSettle();
+
+    final Finder resumeAction = find.text('Resume').first;
+    await tester.ensureVisible(resumeAction);
+    await tester.pumpAndSettle();
+    await tester.tap(resumeAction);
+    await tester.pumpAndSettle();
+
+    expect(find.text('“Croissant rescue bag” is live again.'), findsOneWidget);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm hungry"));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Croissant rescue bag'), findsOneWidget);
+  });
+
+  testWidgets('a customer order reaches the business and status syncs back', (
+    WidgetTester tester,
+  ) async {
+    await openCustomerHome(tester);
+
+    await tester.tap(find.text('Croissant rescue bag').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Croissant rescue bag'), findsOneWidget);
+    expect(find.text('Only 12 left'), findsOneWidget);
+    await tester.tap(find.text('Add to basket'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your basket'), findsOneWidget);
+    expect(find.text('Continue to payment'), findsOneWidget);
+    await tester.tap(find.text('Continue to payment'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Secure payment'), findsOneWidget);
+    await tester.tap(find.text('Pay €3.20'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('RESCUE CONFIRMED'), findsOneWidget);
+    await tester.tap(find.text('View my order'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 × Croissant rescue bag'), findsOneWidget);
+    expect(find.text('READY FOR PICKUP'), findsWidgets);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm a business"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Orders'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Active · 4'), findsOneWidget);
+    expect(find.text('ORDER #WL-8043'), findsOneWidget);
+    expect(find.text('1 × Croissant rescue bag'), findsOneWidget);
+
+    await tester.tap(find.text('Validate code / QR').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirm pickup'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Order #WL-8043 completed.'), findsOneWidget);
+    expect(find.text('Active · 3'), findsOneWidget);
+
+    await logoutToWelcome(tester);
+    await tester.tap(find.text("Let's get started"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("I'm hungry"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Orders'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 × Croissant rescue bag'), findsNothing);
+    await tester.tap(find.text('Completed'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 × Croissant rescue bag'), findsOneWidget);
+    expect(find.text('COLLECTED'), findsWidgets);
   });
 }

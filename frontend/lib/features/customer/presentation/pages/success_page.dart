@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_primary_button.dart';
-import '../../data/customer_session.dart';
-import '../../domain/models/customer_order.dart';
+import '../../../business/domain/models/business_order.dart';
 import 'customer_shell_page.dart';
 
 class SuccessPage extends StatelessWidget {
   const SuccessPage({super.key, required this.order});
 
-  final CustomerOrder order;
+  final BusinessOrder order;
 
   void _goToTab(BuildContext context, int tab) {
     Navigator.of(context).pushNamedAndRemoveUntil(
@@ -75,7 +75,7 @@ class SuccessPage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 13, 20, 18),
                       child: Text(
-                        'Your food is waiting for you at ${order.deal.shop}.',
+                        'Your food is waiting for you at ${order.shop}.',
                         textAlign: TextAlign.center,
                         style: AppTypography.style(
                           size: 13.5,
@@ -150,7 +150,7 @@ class _Burst extends StatelessWidget {
 class _PickupTicket extends StatelessWidget {
   const _PickupTicket({required this.order});
 
-  final CustomerOrder order;
+  final BusinessOrder order;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +185,7 @@ class _PickupTicket extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  order.deal.name,
+                  order.itemName,
                   style: AppTypography.style(
                     size: 14.5,
                     weight: FontWeight.w800,
@@ -193,11 +193,8 @@ class _PickupTicket extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Pickup today · ${order.deal.pickupWindow}',
-                  style: AppTypography.style(
-                    size: 11,
-                    color: AppColors.muted,
-                  ),
+                  'Pickup ${order.pickupWindow}',
+                  style: AppTypography.style(size: 11, color: AppColors.muted),
                 ),
               ],
             ),
@@ -208,7 +205,7 @@ class _PickupTicket extends StatelessWidget {
           const _QrCode(),
           const SizedBox(height: 8),
           Text(
-            order.pickupCode,
+            order.code,
             style: AppTypography.style(
               size: 24,
               weight: FontWeight.w800,
@@ -303,7 +300,7 @@ class _ImpactLine extends StatelessWidget {
           Expanded(
             child: Text(
               'You just rescued 1 meal and saved '
-              '${CustomerSession.co2PerMeal}kg CO₂e.',
+              '${AppStore.co2PerMeal}kg CO₂e.',
               style: AppTypography.style(
                 size: 11.5,
                 color: const Color(0xFF56725E),

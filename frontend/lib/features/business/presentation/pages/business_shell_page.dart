@@ -6,7 +6,7 @@ import '../widgets/business_bottom_nav.dart';
 import 'business_ai_insights_page.dart';
 import 'business_dashboard_page.dart';
 import 'business_orders_page.dart';
-import 'business_placeholder_page.dart';
+import 'business_profile_page.dart';
 
 /// Root of the business experience. The footer navigation stays fixed while
 /// each tab keeps its own state alive in the [IndexedStack].
@@ -24,11 +24,7 @@ class _BusinessShellPageState extends State<BusinessShellPage> {
     BusinessDashboardPage(),
     BusinessAiInsightsPage(),
     BusinessOrdersPage(),
-    BusinessPlaceholderPage(
-      title: 'Profile',
-      message: 'Manage your business details, hours and payout settings here.',
-      icon: Icons.person_rounded,
-    ),
+    BusinessProfilePage(),
   ];
 
   void _selectTab(int index) {

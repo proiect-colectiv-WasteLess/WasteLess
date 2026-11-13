@@ -1,9 +1,15 @@
 /// A customer order placed with the business.
+///
+/// The same record powers the business order-management tab and the
+/// customer's order history, so validating a pickup on either side is
+/// reflected everywhere immediately.
 class BusinessOrder {
   const BusinessOrder({
     required this.id,
     required this.quantity,
     required this.itemName,
+    required this.shop,
+    required this.imageAsset,
     required this.pickupWindow,
     required this.code,
     required this.price,
@@ -14,6 +20,8 @@ class BusinessOrder {
   final String id;
   final int quantity;
   final String itemName;
+  final String shop;
+  final String imageAsset;
   final String pickupWindow;
   final String code;
   final double price;
@@ -33,6 +41,8 @@ class BusinessOrder {
       id: id,
       quantity: quantity,
       itemName: itemName,
+      shop: shop,
+      imageAsset: imageAsset,
       pickupWindow: pickupWindow,
       code: code,
       price: price,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../data/customer_session.dart';
 import '../widgets/cart_fab.dart';
 import '../widgets/customer_bottom_nav.dart';
 import 'customer_explore_page.dart';
@@ -39,6 +39,8 @@ class _CustomerShellPageState extends State<CustomerShellPage> {
 
   @override
   Widget build(BuildContext context) {
+    final AppStore store = AppStoreScope.of(context);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
@@ -60,24 +62,16 @@ class _CustomerShellPageState extends State<CustomerShellPage> {
                 const CustomerProfilePage(),
               ],
             ),
-            Positioned(
-              right: 17,
-              bottom: 14,
-              child: ListenableBuilder(
-                listenable: CustomerSession.instance,
-                builder: (BuildContext context, _) {
-                  final int count = CustomerSession.instance.basketQuantity;
-                  if (count == 0) {
-                    return const SizedBox.shrink();
-                  }
-                  return CartFab(
-                    count: count,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed(AppRoutes.customerCart),
-                  );
-                },
+            if (store.basketQuantity > 0)
+              Positioned(
+                right: 17,
+                bottom: 14,
+                child: CartFab(
+                  count: store.basketQuantity,
+                  onTap: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.customerCart),
+                ),
               ),
-            ),
           ],
         ),
         bottomNavigationBar: CustomerBottomNav(

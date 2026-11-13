@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/store/app_store.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
-import '../../data/deals_repository.dart';
 import '../../domain/models/deal.dart';
 import '../widgets/customer_search_field.dart';
 import '../widgets/deal_card.dart';
@@ -31,20 +31,18 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     _Category('Drinks', '☕'),
   ];
 
-  final List<Deal> _deals = const DealsRepository().loadDeals();
   String _query = '';
   String _category = 'All';
 
   void _openDeal(Deal deal) {
-    Navigator.of(
-      context,
-    ).pushNamed(AppRoutes.customerProduct, arguments: deal);
+    Navigator.of(context).pushNamed(AppRoutes.customerProduct, arguments: deal);
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<Deal> deals = AppStoreScope.of(context).deals;
     final String query = _query.trim().toLowerCase();
-    final List<Deal> filtered = _deals
+    final List<Deal> filtered = deals
         .where(
           (Deal d) =>
               d.name.toLowerCase().contains(query) ||
@@ -99,22 +97,82 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                 actionLabel: 'See all',
                 onAction: widget.onOpenExplore,
               ),
-              for (final Deal deal in filtered.take(3)) ...<Widget>[
-                DealCard(deal: deal, onTap: () => _openDeal(deal)),
-                const SizedBox(height: 11),
-              ],
-              SectionTitle(
-                title: 'Almost gone!',
-                actionLabel: 'See all',
-                onAction: widget.onOpenExplore,
-              ),
-              for (final Deal deal in _deals.skip(1).take(2)) ...<Widget>[
-                DealCard(deal: deal, onTap: () => _openDeal(deal)),
-                const SizedBox(height: 10),
+              if (deals.isEmpty)
+                const _NoDeals()
+              else ...<Widget>[
+                for (final Deal deal in filtered.take(3)) ...<Widget>[
+                  DealCard(deal: deal, onTap: () => _openDeal(deal)),
+                  const SizedBox(height: 11),
+                ],
+                SectionTitle(
+                  title: 'Almost gone!',
+                  actionLabel: 'See all',
+                  onAction: widget.onOpenExplore,
+                ),
+                for (final Deal deal in deals.skip(1).take(2)) ...<Widget>[
+                  DealCard(deal: deal, onTap: () => _openDeal(deal)),
+                  const SizedBox(height: 10),
+                ],
               ],
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NoDeals extends StatelessWidget {
+  const _NoDeals();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.sageTint,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: const Icon(
+              Icons.storefront_outlined,
+              size: 23,
+              color: AppColors.forest,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Fresh rescues are on the way',
+            textAlign: TextAlign.center,
+            style: AppTypography.style(
+              size: 15,
+              weight: FontWeight.w800,
+              letterSpacing: -0.25,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'New offers from local businesses will appear here as soon as '
+            'they are published.',
+            textAlign: TextAlign.center,
+            style: AppTypography.style(
+              size: 12,
+              height: 1.45,
+              color: AppColors.muted,
+            ),
+          ),
+        ],
       ),
     );
   }
