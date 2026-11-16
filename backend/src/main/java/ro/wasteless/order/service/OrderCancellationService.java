@@ -59,14 +59,26 @@ public class OrderCancellationService {
         || !clock.instant().isBefore(order.pickupStartAt.plusSeconds(grace)))
       throw new DomainException(
           ErrorCode.ORDER_NOT_CANCELABLE, HttpStatus.CONFLICT, "Order cannot be canceled now");
-    if (!refunds.refund(order.id, request.reason()))
+    return attempt(order, request.reason());
+  }
+
+  @Transactional
+  public void reconcile(String reference) {
+    var order = orders.lockByReference(reference).orElse(null);
+    if (order == null || order.status != OrderStatus.ACTIVE || !refunds.retryDue(order.id)) return;
+    if (!clock.instant().isBefore(order.pickupStartAt.plusSeconds(grace))) return;
+    attempt(order, "Refund reconciliation");
+  }
+
+  private ResponseEntity<?> attempt(FoodOrder order, String reason) {
+    if (!refunds.refund(order.id, reason))
       return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
           .body(
               ProblemResponses.of(
                   HttpStatus.BAD_GATEWAY,
                   ErrorCode.REFUND_FAILED,
                   "Refund failed; order remains active. Retry with a new request key."));
-    order.cancel(request.reason(), clock.instant());
+    order.cancel(reason, clock.instant());
     stock.release(order.offerId, order.quantity);
     orders.saveAndFlush(order);
     return ResponseEntity.ok(views.view(order));

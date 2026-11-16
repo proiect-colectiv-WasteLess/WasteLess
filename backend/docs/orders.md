@@ -66,3 +66,16 @@ Refund failure policy: persist FAILED refund, keep order ACTIVE and stock reserv
 return 502 REFUND_FAILED. The failed response is replayed for its original request key;
 a fresh attempt uses a new key. Detail exposes the failure. No failed refund is
 reported as refunded. Provider details are not exposed in error messages.
+
+WAS-48: Refund records map P13. The captured payment row is locked before summing
+prior successful refunds; only the remaining captured amount can be returned.
+Transient failures retry at 30s, 60s (default maximum 3 attempts, capped backoff 30min);
+permanent failures do not retry. Attempts are encoded as safe failure-code#attempt
+in P13 failure_reason because the shared schema has no retry columns. No sleep is
+used in requests or tests. Config: app.orders.refund-max-attempts (1..8),
+refund-backoff-seconds, refund-pending-age-seconds, refund-reconciliation-delay-ms.
+Pending refunds are reconciled after 300s by default; a bounded 100-order batch runs
+each minute. Each retry locks the order and rechecks ACTIVE/cutoff, so validation
+winning first cannot lead to a later refund. Success cancels and restores stock
+in the same transaction. Original failed HTTP replies remain replayable; fresh
+GET shows reconciliation outcome. Existing failed rows remain visible.

@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import ro.wasteless.common.port.OfferStockPort;
 
 @Configuration
+@org.springframework.scheduling.annotation.EnableScheduling
 @EnableMethodSecurity
 public class OrderConfiguration {
   @Bean

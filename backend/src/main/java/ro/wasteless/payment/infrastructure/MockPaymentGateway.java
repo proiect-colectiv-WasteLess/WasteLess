@@ -43,7 +43,7 @@ public class MockPaymentGateway implements PaymentGateway {
         () -> {
           if (amount.compareTo(new BigDecimal("13.13")) == 0) return new Result(null, "DECLINED");
           if (amount.compareTo(new BigDecimal("14.14")) == 0) return new Result(null, "TIMEOUT");
-          String ref = "mock-pay-" + order;
+          String ref = "mock-pay-" + order + ":" + amount.toPlainString();
           captured.put(ref, amount);
           return new Result(ref, "CAPTURED");
         });
@@ -51,6 +51,13 @@ public class MockPaymentGateway implements PaymentGateway {
 
   public Result refund(String reference, BigDecimal amount, String key) {
     BigDecimal paid = captured.get(reference);
+    if (paid == null && reference != null && reference.startsWith("mock-pay-")) {
+      try {
+        paid = new BigDecimal(reference.substring(reference.lastIndexOf(':') + 1));
+      } catch (RuntimeException ignored) {
+        return new Result(null, "PERMANENT_FAILURE");
+      }
+    }
     if (paid == null || amount.signum() <= 0 || amount.compareTo(paid) > 0)
       return new Result(null, "PERMANENT_FAILURE");
     if (paid.compareTo(new BigDecimal("15.15")) == 0) return new Result(null, "PERMANENT_FAILURE");
