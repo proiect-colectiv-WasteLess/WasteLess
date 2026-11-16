@@ -1,23 +1,13 @@
 package ro.wasteless.support;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.springframework.test.context.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @org.springframework.context.annotation.Import(TestFoundation.class)
 public abstract class PostgisIntegrationTest {
-  protected static final PostgreSQLContainer DB =
-      new PostgreSQLContainer(
-          DockerImageName.parse("postgis/postgis:16-3.4").asCompatibleSubstituteFor("postgres"));
-
-  static {
-    DB.start();
-  }
+  protected static final IntegrationDatabase.Settings DB = IntegrationDatabase.settings();
 
   @DynamicPropertySource
   static void database(DynamicPropertyRegistry registry) {
