@@ -9,8 +9,9 @@ import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@org.springframework.context.annotation.Import(TestFoundation.class)
 public abstract class PostgisIntegrationTest {
-  static final PostgreSQLContainer DB =
+  protected static final PostgreSQLContainer DB =
       new PostgreSQLContainer(
           DockerImageName.parse("postgis/postgis:16-3.4").asCompatibleSubstituteFor("postgres"));
 
