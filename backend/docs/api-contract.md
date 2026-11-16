@@ -1,10 +1,10 @@
 # API contract proposal (WAS-68)
 
-Review required from A/B/C and the frontend owner before endpoint implementation. This file specifies the intended contract; feature endpoints below are NOT implemented by this foundation. Generated /v3/api-docs currently describes implemented endpoints only. Health and the security boundary are operational.
+Order/fulfilment endpoints owned by C are implemented in WAS-42–WAS-55; see orders.md for final behavior. Auth/JWT and catalog CRUD remain with A/B. Generated /v3/api-docs describes installed handlers.
 
 ## Wire rules
 
-Base /api/v1; Authorization: Bearer <access token>; JSON camelCase; UUID identifiers as strings. Persisted timestamps and timestamp API fields use ISO-8601 UTC. Money is a JSON number in EUR with at most two decimals; backend calculations use BigDecimal without silent rounding. Single objects and arrays have no wrapper. Paginated lists alone return {content,page,size,totalElements,totalPages}; zero-based page, default size 20, maximum 100.
+Base /api/v1; Authorization: Bearer <access token>; JSON camelCase; UUID identifiers as strings, except Order.id uses its WL reference. Persisted timestamps and timestamp API fields use ISO-8601 UTC. Money is a JSON number in EUR with at most two decimals; backend calculations use BigDecimal without silent rounding. Single objects and arrays have no wrapper. Paginated lists alone return {content,page,size,totalElements,totalPages}; zero-based page, default size 20, maximum 100.
 
 Existing Flutter display fields are preserved: Deal.pickupStart/pickupEnd are HH:mm strings, pickupWindow is HH:mm–HH:mm, and Order.timeAgo is a display string. These are NOT ISO timestamps. Derive display times using the business timezone at the API mapping boundary (Bucharest demo: Europe/Bucharest); expose additive pickupStartAt/pickupEndAt for absolute times. Existing category labels on BusinessOffer are display strings (e.g. Bakery); Deal.category is a lowercase enum. The proposed `other` category needs an additive frontend enum value before it is returned to Deal consumers.
 
@@ -49,7 +49,7 @@ Offer:
 ```
 Order:
 ```json
-{"id":"00000000-0000-0000-0000-000000000002","quantity":1,"itemName":"Bakery bag","shop":"Fresh Bakery","imageAsset":"https://example.test/bag.jpg","pickupWindow":"17:30–19:00","code":"123456","price":4.00,"timeAgo":"Just now","isCompleted":false,"status":"ACTIVE","createdAt":"2026-11-16T15:00:00Z","canceledAt":null}
+{"id":"WL-00001","quantity":1,"itemName":"Bakery bag","shop":"Fresh Bakery","imageAsset":"https://example.test/bag.jpg","pickupWindow":"17:30–19:00","code":"1234","price":4.00,"timeAgo":"Just now","isCompleted":false,"status":"ACTIVE","createdAt":"2026-11-16T15:00:00Z","canceledAt":null}
 ```
 Order.price is total paid (quantity × unit price), not unit price. status ACTIVE|COMPLETED|CANCELED; isCompleted is true only for COMPLETED. stockLevel low|medium|high. Deal categories bakery|meals|groceries|desserts|fruitAndVeg|drinks; `other` is pending frontend compatibility review. Remote imageAsset rendering must be agreed with frontend before HTTP wiring (existing assets are local paths).
 

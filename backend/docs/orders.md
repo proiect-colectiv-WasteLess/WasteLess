@@ -136,3 +136,29 @@ write data and migration tests create/drop isolated schemas. Default test profil
 uses the deterministic mock; no real payment or card data is sent.
 Strict JSON rejects unknown ownership/price fields, fractional integer quantities
 and numeric enum ordinals. Header/parameter validation uses the common ProblemDetail.
+
+WAS-55: Real PostgreSQL concurrency tests synchronize with latches, not sleeps.
+Twelve simultaneous requests for five units produce exactly five captured
+payments/orders, zero stock, five distinct active pickup codes and five creation
+audit rows. Identical concurrent keys execute once. Parallel cancellation produces
+one refund/restock and one terminal audit row. Pickup/cancel race enables a grace
+policy so both are eligible and checks exactly one winner. Pause, soft deletion
+and hard deletion holding the offer lock make concurrent placement fail without
+an order/payment. Successful placement before a later pause remains valid:
+the offer lock defines the linearization order, not the final offer flag alone.
+
+## Verification performed
+
+JDK 21.0.13, real PostgreSQL 14.20 with PostGIS 3.6 on Windows:
+mvnw clean verify passed with 8 unit/architecture tests and 35 integration tests,
+0 failures, 0 errors, 0 skipped. Spotless and packaging passed; JaCoCo report
+generated. WireMock's HTTP provider test and all five concurrency tests ran.
+
+Docker is not installed here: the default Testcontainers PostgreSQL 16/PostGIS 3.4
+image path was not executed. The external-database mode ran all migrations and
+tests against actual PostgreSQL/PostGIS, not an in-memory replacement.
+
+Authentication scenarios inside the C tests use Spring Security test principals.
+Integration with A's eventual JWT filter and Flutter is not claimed or included.
+Only the deterministic payment adapter is delivered; a real payment provider
+requires reconciliation/compensation for external-network/commit failure.
