@@ -3,7 +3,7 @@ on:
   pull_request:
     paths: ['backend/**', '.github/workflows/backend.yml', 'docker-compose.yml']
   push:
-    branches: [main, 'codex/**']
+    branches: [main, rari-platform-foundation]
     paths: ['backend/**', '.github/workflows/backend.yml', 'docker-compose.yml']
 permissions:
   contents: read
