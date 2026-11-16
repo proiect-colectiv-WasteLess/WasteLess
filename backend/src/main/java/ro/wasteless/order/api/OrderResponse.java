@@ -19,7 +19,29 @@ public record OrderResponse(
     boolean isCompleted,
     OrderStatus status,
     Instant createdAt,
-    Instant canceledAt) {
+    Instant canceledAt,
+    RefundView refund) {
+  public record RefundView(
+      String status, BigDecimal amount, String currency, String failureReason) {}
+
+  public OrderResponse withRefund(RefundView value) {
+    return new OrderResponse(
+        id,
+        quantity,
+        itemName,
+        shop,
+        imageAsset,
+        pickupWindow,
+        code,
+        price,
+        timeAgo,
+        isCompleted,
+        status,
+        createdAt,
+        canceledAt,
+        value);
+  }
+
   public static OrderResponse of(FoodOrder o, Clock clock) {
     ZoneId zone = ZoneId.of("Europe/Bucharest");
     var start = o.pickupStartAt.atZone(zone);
@@ -54,6 +76,7 @@ public record OrderResponse(
         o.status == OrderStatus.COMPLETED,
         o.status,
         o.createdAt,
-        o.canceledAt);
+        o.canceledAt,
+        null);
   }
 }

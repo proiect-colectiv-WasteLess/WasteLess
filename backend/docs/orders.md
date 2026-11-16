@@ -48,3 +48,10 @@ IDEMPOTENCY_MISMATCH. Rejected/rolled-back requests do not cache a success.
 Keys expire after 24h; expired bodies are never returned and a new claim replaces
 the expired row. JdbcIdempotencyStore.purgeExpired is available to P18 cleanup.
 The mock rolls back its local operation cache if the application transaction fails.
+
+WAS-46: GET /orders?status=ACTIVE|COMPLETED|CANCELED&page=0&size=20 and
+GET /orders/{WL-reference} are CLIENT-only. Other users see 404 on detail.
+Pages are bounded to 100, sorted createdAt descending with a stable id tie-breaker.
+List/detail use stored snapshots after hard offer deletion (FK becomes null).
+The additive refund object contains status, amount, currency and a safe failure
+reason for the canceled tab; null means no refund exists. No live offer is needed.
