@@ -1,4 +1,8 @@
 spring:
+  flyway:
+    locations: classpath:db/migration
+    placeholders:
+      demoSeedEnabled: false
   config:
     activate:
       on-profile: prod

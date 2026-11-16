@@ -8,6 +8,8 @@ files = list((root / 'backend/src/main/resources').rglob('*.sql'))
 versions = []
 for path in files:
     relative = path.relative_to(root).as_posix()
+    if relative == 'backend/src/main/resources/db/dev/R__demo_data.sql':
+        continue
     if not relative.startswith('backend/src/main/resources/db/migration/'):
         raise SystemExit(f'SQL outside the platform migration stream: {relative}')
     match = re.fullmatch(r'V([0-9]+)__[a-z0-9_]+\.sql', path.name)

@@ -1,4 +1,8 @@
 spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/dev
+    placeholders:
+      demoSeedEnabled: true
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wasteless}
     username: ${DB_USER:wasteless}
