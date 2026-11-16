@@ -1,0 +1,58 @@
+name: Backend
+on:
+  pull_request:
+    paths: ['backend/**', '.github/workflows/backend.yml', 'docker-compose.yml']
+  push:
+    branches: [main]
+    paths: ['backend/**', '.github/workflows/backend.yml', 'docker-compose.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Enforce migration ownership and immutability
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          python3 backend/scripts/check_migrations.py "$BASE_SHA"
+      - name: Verify including real PostGIS integration tests
+        working-directory: backend
+        run: bash mvnw -B -ntp verify
+      - name: Build image
+        run: docker build -t wasteless-backend:${{ github.sha }} backend
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-reports
+          path: |
+            backend/target/surefire-reports
+            backend/target/failsafe-reports
+  publish:
+    if: github.event_name == 'push'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish commit-tagged image
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA}"
+          docker build -t "$IMAGE" backend
+          docker push "$IMAGE"

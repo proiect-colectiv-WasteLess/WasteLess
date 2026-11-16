@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: wasteless
+      POSTGRES_USER: ${DB_USER:-wasteless}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Copy .env.example to .env first}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d wasteless"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://db:5432/wasteless
+      DB_USER: ${DB_USER:-wasteless}
+      DB_PASSWORD: ${DB_PASSWORD:?Copy .env.example to .env first}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      STORAGE_PATH: /app/media
+      PAYMENT_MODE: ${PAYMENT_MODE:-stub}
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:
