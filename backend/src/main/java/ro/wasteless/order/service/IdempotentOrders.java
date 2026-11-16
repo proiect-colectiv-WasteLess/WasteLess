@@ -59,7 +59,13 @@ public class IdempotentOrders {
           .contentType(MediaType.APPLICATION_JSON)
           .body(saved.responseBody());
     }
-    String body = json.writeValueAsString(action.get());
+    Object result = action.get();
+    Object payload = result;
+    if (result instanceof ResponseEntity<?> response) {
+      status = response.getStatusCode().value();
+      payload = response.getBody();
+    }
+    String body = json.writeValueAsString(payload);
     store.complete(actor, scope, key, status, body);
     // Claim, business effects and reply become visible together at commit.
     return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(body);

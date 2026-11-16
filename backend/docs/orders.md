@@ -55,3 +55,14 @@ Pages are bounded to 100, sorted createdAt descending with a stable id tie-break
 List/detail use stored snapshots after hard offer deletion (FK becomes null).
 The additive refund object contains status, amount, currency and a safe failure
 reason for the canceled tab; null means no refund exists. No live offer is needed.
+
+WAS-47: POST /orders/{reference}/cancel with {reason?} requires the owner CLIENT
+and Idempotency-Key. Default cutoff is strictly before pickupStartAt; optional
+app.orders.cancel-grace-seconds (>=0) extends it. Order lock serializes cancellation
+and pickup. Successful full refund, CANCELED transition and restock commit together.
+Already-canceled requests return 200 without another refund or restock.
+
+Refund failure policy: persist FAILED refund, keep order ACTIVE and stock reserved,
+return 502 REFUND_FAILED. The failed response is replayed for its original request key;
+a fresh attempt uses a new key. Detail exposes the failure. No failed refund is
+reported as refunded. Provider details are not exposed in error messages.
