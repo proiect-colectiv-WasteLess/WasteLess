@@ -1,27 +1,28 @@
 package ro.wasteless.order.api;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 import org.springframework.http.*;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ro.wasteless.order.service.OrderPlacementService;
+import ro.wasteless.order.service.*;
 
 @RestController
 @RequestMapping("/api/v1/orders")
-@Validated
 public class OrderController {
   private final OrderPlacementService placement;
+  private final IdempotentOrders idempotency;
 
-  public OrderController(OrderPlacementService placement) {
+  public OrderController(OrderPlacementService placement, IdempotentOrders idempotency) {
     this.placement = placement;
+    this.idempotency = idempotency;
   }
 
   @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public OrderResponse place(
+  @PreAuthorize("hasRole('CLIENT')")
+  public ResponseEntity<String> place(
       @Valid @RequestBody OrderRequests.Place request,
-      @RequestHeader("Idempotency-Key") @NotBlank @Size(max = 64) String key) {
-    return placement.place(request, key);
+      @RequestHeader("Idempotency-Key") String key) {
+    return idempotency.execute(
+        "orders:create", key, request, 201, () -> placement.place(request, key));
   }
 }

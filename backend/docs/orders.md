@@ -38,3 +38,13 @@ this fallback automatically. Currency EUR and total NUMERIC(10,2) bounds are che
 Payment is authorize+capture through the common port; no provider class is imported.
 Authentication must supply a UUID principal and ROLE_CLIENT/ROLE_BUSINESS as defined
 by team A. No authentication bypass or replacement login endpoint is introduced.
+
+WAS-45: Idempotency-Key is required (1..100 characters) on create and cancel.
+The database unique key atomically serializes concurrent claims. The claim, side
+effects and JSON result commit together: no successful response is visible before
+its order/payment commits. JSONB replay preserves JSON values and original status;
+object member order is insignificant. Different canonical DTO payload -> 409
+IDEMPOTENCY_MISMATCH. Rejected/rolled-back requests do not cache a success.
+Keys expire after 24h; expired bodies are never returned and a new claim replaces
+the expired row. JdbcIdempotencyStore.purgeExpired is available to P18 cleanup.
+The mock rolls back its local operation cache if the application transaction fails.
