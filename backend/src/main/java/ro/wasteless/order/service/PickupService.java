@@ -23,6 +23,8 @@ public class PickupService {
   private final PickupAttempts attempts;
   private final Clock clock;
   private final long grace;
+  private final ro.wasteless.common.port.OrderAudit audit;
+  private final OrderEvents events;
 
   public PickupService(
       OrderRepository orders,
@@ -31,7 +33,9 @@ public class PickupService {
       OrderViews views,
       PickupAttempts attempts,
       Clock clock,
-      @Value("${app.orders.pickup-grace-seconds:900}") long grace) {
+      @Value("${app.orders.pickup-grace-seconds:900}") long grace,
+      ro.wasteless.common.port.OrderAudit audit,
+      OrderEvents events) {
     if (grace < 0) throw new IllegalArgumentException("Pickup grace must not be negative");
     this.orders = orders;
     this.business = business;
@@ -40,6 +44,8 @@ public class PickupService {
     this.attempts = attempts;
     this.clock = clock;
     this.grace = grace;
+    this.audit = audit;
+    this.events = events;
   }
 
   @Transactional
@@ -71,6 +77,9 @@ public class PickupService {
           ErrorCode.CONFLICT, HttpStatus.CONFLICT, "Outside the pickup window");
     order.complete(current.id(), clock.instant());
     orders.saveAndFlush(order);
+    audit.append(order.id, "ACTIVE", "COMPLETED", current.id(), "Pickup validated");
+    events.afterCommit(
+        new ro.wasteless.common.event.OrderCompletedEvent(order.id, current.id(), clock.instant()));
     attempts.clear(order.id);
     return views.view(order);
   }

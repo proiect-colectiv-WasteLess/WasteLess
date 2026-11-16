@@ -94,3 +94,14 @@ Code comparison uses constant-time bytes; errors never repeat codes.
 Five wrong codes in 300s block subsequent attempts (429), scoped to the owned order.
 The bounded single-instance limiter uses injected Clock, expires entries and clears
 on success. Multiple app replicas require a shared limiter adapter before scaling.
+
+WAS-51: OrderAudit is an append-only port. Creation, completion, cancellation
+and refund transitions insert history in the same transaction as the state change.
+Refund rows use REFUND_PENDING/REFUND_FAILED/REFUND_SUCCEEDED in P13's text
+status columns, independently of the order's three terminal-state rules.
+Rejected actions roll back their attempted audit rows; a committed failed refund
+is a real refund-state change, not a canceled order. History has no update/delete
+application API and survives offer deletion. Completion/cancellation publish the
+shared in-process events only after commit; replays do not publish duplicates.
+Listener failures are logged after commit without reporting the committed order
+as rolled back. These are local events, not a durable external message queue.

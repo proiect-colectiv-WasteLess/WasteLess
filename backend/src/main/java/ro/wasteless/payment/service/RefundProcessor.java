@@ -18,6 +18,7 @@ public class RefundProcessor {
   private final int maxAttempts;
   private final long backoff;
   private final long pendingAge;
+  private final ro.wasteless.common.port.OrderAudit audit;
 
   public RefundProcessor(
       JdbcTemplate jdbc,
@@ -25,7 +26,8 @@ public class RefundProcessor {
       Clock clock,
       @Value("${app.orders.refund-max-attempts:3}") int maxAttempts,
       @Value("${app.orders.refund-backoff-seconds:30}") long backoff,
-      @Value("${app.orders.refund-pending-age-seconds:300}") long pendingAge) {
+      @Value("${app.orders.refund-pending-age-seconds:300}") long pendingAge,
+      ro.wasteless.common.port.OrderAudit audit) {
     if (maxAttempts < 1 || maxAttempts > 8 || backoff < 1 || pendingAge < 0)
       throw new IllegalArgumentException("Invalid refund retry policy");
     this.jdbc = jdbc;
@@ -34,6 +36,7 @@ public class RefundProcessor {
     this.maxAttempts = maxAttempts;
     this.backoff = backoff;
     this.pendingAge = pendingAge;
+    this.audit = audit;
   }
 
   @Transactional(propagation = Propagation.MANDATORY)
@@ -76,6 +79,12 @@ public class RefundProcessor {
           amount,
           reason,
           refundId);
+    audit.append(
+        order,
+        previous == null ? null : "REFUND_" + previous.get("status"),
+        "REFUND_PENDING",
+        (UUID) payment.get("user_id"),
+        "Refund requested");
     var result =
         gateway.refund((String) payment.get("provider_reference"), amount, "refund:" + refundId);
     boolean success = "SUCCEEDED".equals(result.status());
@@ -96,6 +105,12 @@ public class RefundProcessor {
         failure,
         Timestamp.from(clock.instant()),
         refundId);
+    audit.append(
+        order,
+        "REFUND_PENDING",
+        success ? "REFUND_SUCCEEDED" : "REFUND_FAILED",
+        (UUID) payment.get("user_id"),
+        success ? "Refund processed" : failure);
     if (success)
       jdbc.update(
           "update payments set status='REFUNDED',updated_at=? where id=?",

@@ -23,6 +23,8 @@ public class OrderCancellationService {
   private final OfferStockPort stock;
   private final Clock clock;
   private final long grace;
+  private final ro.wasteless.common.port.OrderAudit audit;
+  private final OrderEvents events;
 
   public OrderCancellationService(
       OrderRepository orders,
@@ -31,7 +33,9 @@ public class OrderCancellationService {
       RefundProcessor refunds,
       OfferStockPort stock,
       Clock clock,
-      @Value("${app.orders.cancel-grace-seconds:0}") long grace) {
+      @Value("${app.orders.cancel-grace-seconds:0}") long grace,
+      ro.wasteless.common.port.OrderAudit audit,
+      OrderEvents events) {
     if (grace < 0) throw new IllegalArgumentException("Cancel grace must not be negative");
     this.orders = orders;
     this.current = current;
@@ -40,6 +44,8 @@ public class OrderCancellationService {
     this.stock = stock;
     this.clock = clock;
     this.grace = grace;
+    this.audit = audit;
+    this.events = events;
   }
 
   @Transactional
@@ -81,6 +87,10 @@ public class OrderCancellationService {
     order.cancel(reason, clock.instant());
     stock.release(order.offerId, order.quantity);
     orders.saveAndFlush(order);
+    audit.append(order.id, "ACTIVE", "CANCELED", order.customerUserId, reason);
+    events.afterCommit(
+        new ro.wasteless.common.event.OrderCanceledEvent(
+            order.id, order.customerUserId, clock.instant()));
     return ResponseEntity.ok(views.view(order));
   }
 }

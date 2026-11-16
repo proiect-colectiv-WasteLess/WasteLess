@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*;
 public class GlobalExceptionHandler {
   @ExceptionHandler(DomainException.class)
   ProblemDetail domain(DomainException e) {
+    if (java.util.Set.of(
+            ErrorCode.CONFLICT, ErrorCode.ORDER_NOT_CANCELABLE, ErrorCode.INVALID_PICKUP_CODE)
+        .contains(e.code()))
+      org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class)
+          .warn("Order action rejected: {}", e.code());
     return ProblemResponses.of(e.status(), e.code(), e.getMessage());
   }
 

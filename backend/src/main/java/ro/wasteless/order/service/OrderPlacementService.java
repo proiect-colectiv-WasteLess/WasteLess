@@ -26,6 +26,7 @@ public class OrderPlacementService {
   private final OrderIdentifiers ids;
   private final CurrentUser current;
   private final Clock clock;
+  private final OrderAudit audit;
 
   public OrderPlacementService(
       OrderRepository orders,
@@ -35,7 +36,8 @@ public class OrderPlacementService {
       PaymentGateway gateway,
       OrderIdentifiers ids,
       CurrentUser current,
-      Clock clock) {
+      Clock clock,
+      OrderAudit audit) {
     this.orders = orders;
     this.payments = payments;
     this.offers = offers;
@@ -44,6 +46,7 @@ public class OrderPlacementService {
     this.ids = ids;
     this.current = current;
     this.clock = clock;
+    this.audit = audit;
   }
 
   @Transactional
@@ -101,6 +104,7 @@ public class OrderPlacementService {
     p.createdAt = p.capturedAt;
     p.updatedAt = p.capturedAt;
     payments.saveAndFlush(p);
+    audit.append(o.id, null, "ACTIVE", user, "Order placed");
     return OrderResponse.of(o, clock);
   }
 
