@@ -84,3 +84,13 @@ WAS-49: GET /businesses/me/orders has the same bounded pagination and optional
 status filter as customer history. Business identity is resolved from the current
 owner, never a request parameter. It reuses all Order UI keys, adds customerName
 (first name + last initial) and never selects customer contact fields.
+
+WAS-50: POST /businesses/me/orders/{reference}/validate with {code:"1234"}.
+The /validate-pickup alias preserves P2's proposed route. Owner business only;
+other businesses receive 404. ACTIVE, matching code and pickupStartAt <= now <=
+pickupEndAt + 900 seconds are required. Completed repeats return 200, without a
+second transition. Canceled orders cannot be completed. Configurable pickup-grace-seconds.
+Code comparison uses constant-time bytes; errors never repeat codes.
+Five wrong codes in 300s block subsequent attempts (429), scoped to the owned order.
+The bounded single-instance limiter uses injected Clock, expires entries and clears
+on success. Multiple app replicas require a shared limiter adapter before scaling.
