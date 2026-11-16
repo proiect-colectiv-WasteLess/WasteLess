@@ -35,6 +35,7 @@ public class Payment {
   private BigDecimal amount;
 
   @Column(updatable = false, columnDefinition = "char(3)")
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
   private String currency;
 
   public String provider;
