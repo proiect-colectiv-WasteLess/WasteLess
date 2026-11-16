@@ -30,7 +30,17 @@ class MigrationFailureIT extends PostgisIntegrationTest {
               .locations("classpath:db/migration")
               .load();
       upgrade.migrate();
-      assertThat(upgrade.info().applied()).hasSize(5);
+      assertThat(
+              java.util.Arrays.stream(upgrade.info().applied())
+                  .map(m -> m.getScript())
+                  .filter(script -> script.startsWith("V"))
+                  .toList())
+          .containsExactly(
+              "V1__identity.sql",
+              "V2__catalog.sql",
+              "V3__orders_payments.sql",
+              "V4__search_indexes.sql",
+              "V5__order_indexes.sql");
       Files.writeString(directory.resolve("V6__deliberately_broken.sql"), "THIS IS NOT SQL;");
       var broken =
           Flyway.configure()

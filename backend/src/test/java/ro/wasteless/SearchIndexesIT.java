@@ -26,6 +26,8 @@ class SearchIndexesIT extends PostgisIntegrationTest {
         c.location(),
         category);
     jdbc.update("update offers set title='RareNeedle7a' where id=?", c.offer());
+    // Bulk inserts accumulate a GIN pending list; flush it as autovacuum would after loading.
+    jdbc.queryForObject("select gin_clean_pending_list('ix_offer_title_search')", Long.class);
     jdbc.execute("analyze offers");
     jdbc.execute("analyze business_locations");
     var geo =
