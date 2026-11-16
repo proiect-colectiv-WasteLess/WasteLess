@@ -56,7 +56,10 @@ public class IdempotentOrders {
         throw new DomainException(
             ErrorCode.CONFLICT, HttpStatus.CONFLICT, "Request is being processed; retry");
       return ResponseEntity.status(saved.status())
-          .contentType(MediaType.APPLICATION_JSON)
+          .contentType(
+              saved.status() >= 400
+                  ? MediaType.APPLICATION_PROBLEM_JSON
+                  : MediaType.APPLICATION_JSON)
           .body(saved.responseBody());
     }
     Object result = action.get();
@@ -68,7 +71,10 @@ public class IdempotentOrders {
     String body = json.writeValueAsString(payload);
     store.complete(actor, scope, key, status, body);
     // Claim, business effects and reply become visible together at commit.
-    return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(body);
+    return ResponseEntity.status(status)
+        .contentType(
+            status >= 400 ? MediaType.APPLICATION_PROBLEM_JSON : MediaType.APPLICATION_JSON)
+        .body(body);
   }
 
   public static String hash(String value) {

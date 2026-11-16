@@ -121,3 +121,18 @@ Offer counts are current inventory (independent of date range), excluding delete
 offers; active must be orderable. Revenue is completed EUR totals only, commission
 10% rounded HALF_UP to cents, net = revenue - commission. These are metrics only:
 no fee collection, payout or payment infrastructure is added.
+
+WAS-54: Full regression tests include MockMvc JSON contracts and role/ownership
+boundaries, real Flyway+PostGIS persistence, stock/payment side effects, refund
+policy, cancellation replay, metrics and pickup. A WireMock-backed test-only
+PaymentGateway proves the order service does not depend on the local provider
+and that HTTP provider failure rolls stock back. Clock is fixed by P19.
+
+Run ./mvnw verify with Docker (default postgis/postgis:16-3.4 Testcontainers).
+Without Docker, point TEST_DB_URL, TEST_DB_USERNAME, TEST_DB_PASSWORD at an isolated
+PostgreSQL database with PostGIS available; all integration classes share that DB.
+No integration test silently skips. Never use a real business database: fixtures
+write data and migration tests create/drop isolated schemas. Default test profile
+uses the deterministic mock; no real payment or card data is sent.
+Strict JSON rejects unknown ownership/price fields, fractional integer quantities
+and numeric enum ordinals. Header/parameter validation uses the common ProblemDetail.

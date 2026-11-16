@@ -3,6 +3,13 @@ spring:
     name: WasteLess
   profiles:
     default: dev
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+      fail-on-unknown-properties: true
+    datatype:
+      enum:
+        fail-on-numbers-for-enums: true
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}

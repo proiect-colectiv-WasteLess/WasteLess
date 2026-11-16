@@ -19,7 +19,7 @@ class PlatformIT extends PostgisIntegrationTest {
   @Test
   void migratesEmptyDatabaseAndValidatesChecksums() {
     flyway.validate();
-    assertThat(flyway.info().applied()).hasSize(5);
+    assertThat(flyway.info().applied()).hasSize(6);
     assertThat(jdbc.queryForObject("select PostGIS_Version()", String.class)).isNotBlank();
     assertThat(
             jdbc.queryForObject(

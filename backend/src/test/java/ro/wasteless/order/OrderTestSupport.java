@@ -10,38 +10,21 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.*;
 import org.springframework.test.web.servlet.*;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
 import ro.wasteless.support.*;
 import tools.jackson.databind.*;
 
-@SpringBootTest(properties = {"app.payment-mode=mock"})
+@SpringBootTest(
+    properties = {"app.payment-mode=mock", "app.orders.refund-reconciliation-delay-ms=3600000"})
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @org.springframework.context.annotation.Import(TestFoundation.class)
 public abstract class OrderTestSupport {
-  static PostgreSQLContainer container;
-
   @DynamicPropertySource
   static void database(DynamicPropertyRegistry r) {
-    String url = System.getenv("TEST_DB_URL");
-    if (url == null) {
-      container =
-          new PostgreSQLContainer(
-              DockerImageName.parse("postgis/postgis:16-3.4")
-                  .asCompatibleSubstituteFor("postgres"));
-      container.start();
-      r.add("spring.datasource.url", container::getJdbcUrl);
-      r.add("spring.datasource.username", container::getUsername);
-      r.add("spring.datasource.password", container::getPassword);
-    } else {
-      r.add("spring.datasource.url", () -> url);
-      r.add(
-          "spring.datasource.username",
-          () -> System.getenv().getOrDefault("TEST_DB_USERNAME", "postgres"));
-      r.add(
-          "spring.datasource.password", () -> System.getenv().getOrDefault("TEST_DB_PASSWORD", ""));
-    }
+    var db = IntegrationDatabase.settings();
+    r.add("spring.datasource.url", db::getJdbcUrl);
+    r.add("spring.datasource.username", db::getUsername);
+    r.add("spring.datasource.password", db::getPassword);
   }
 
   @Autowired protected MockMvc mvc;

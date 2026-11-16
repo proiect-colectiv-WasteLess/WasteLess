@@ -39,6 +39,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({
     org.springframework.http.converter.HttpMessageNotReadableException.class,
     org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+    org.springframework.web.bind.MissingRequestHeaderException.class,
+    org.springframework.web.bind.MissingServletRequestParameterException.class,
     jakarta.validation.ConstraintViolationException.class
   })
   ProblemDetail invalid(Exception e) {
