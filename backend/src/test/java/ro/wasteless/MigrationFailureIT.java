@@ -40,15 +40,16 @@ class MigrationFailureIT extends PostgisIntegrationTest {
               "V2__catalog.sql",
               "V3__orders_payments.sql",
               "V4__search_indexes.sql",
-              "V5__order_indexes.sql");
-      Files.writeString(directory.resolve("V6__deliberately_broken.sql"), "THIS IS NOT SQL;");
+              "V5__order_indexes.sql",
+              "V6__four_digit_pickup_codes.sql");
+      Files.writeString(directory.resolve("V7__deliberately_broken.sql"), "THIS IS NOT SQL;");
       var broken =
           Flyway.configure()
               .dataSource(DB.getJdbcUrl(), DB.getUsername(), DB.getPassword())
               .schemas(schema)
               .locations("classpath:db/migration", "filesystem:" + directory)
               .load();
-      assertThatThrownBy(broken::migrate).hasStackTraceContaining("V6__deliberately_broken.sql");
+      assertThatThrownBy(broken::migrate).hasStackTraceContaining("V7__deliberately_broken.sql");
     } finally {
       Flyway.configure()
           .dataSource(DB.getJdbcUrl(), DB.getUsername(), DB.getPassword())
