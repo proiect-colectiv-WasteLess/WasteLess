@@ -3,7 +3,7 @@ on:
   pull_request:
     paths: ['backend/**', '.github/workflows/backend.yml', 'docker-compose.yml']
   push:
-    branches: [main]
+    branches: [main, 'codex/**']
     paths: ['backend/**', '.github/workflows/backend.yml', 'docker-compose.yml']
 permissions:
   contents: read
@@ -38,7 +38,7 @@ jobs:
             backend/target/surefire-reports
             backend/target/failsafe-reports
   publish:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: verify
     runs-on: ubuntu-latest
     permissions:
