@@ -30,6 +30,15 @@ jobs:
         run: bash mvnw -B -ntp verify
       - name: Build image
         run: docker build -t wasteless-backend:${{ github.sha }} backend
+      - name: Scan runtime image for critical vulnerabilities
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
+        with:
+          image-ref: wasteless-backend:${{ github.sha }}
+          scanners: vuln
+          severity: CRITICAL
+          exit-code: '1'
+          format: table
+          output: trivy-image.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -37,6 +46,8 @@ jobs:
           path: |
             backend/target/surefire-reports
             backend/target/failsafe-reports
+            backend/target/site/jacoco
+            trivy-image.txt
   publish:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: verify
