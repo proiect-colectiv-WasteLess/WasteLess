@@ -111,3 +111,13 @@ customer/status index. Completed EUR orders contribute quantity meals, quantity 
 (originalUnitPrice - unitPrice) savings, and 1.2 kg CO2 per meal. ACTIVE/CANCELED
 orders never contribute. ImpactLevels is the single source for levels 1..5:
 0, 10, 25, 50, 100 meals; mealsToNextLevel is zero at maximum level.
+
+WAS-53: GET /businesses/me/dashboard?from=YYYY-MM-DD&to=YYYY-MM-DD is BUSINESS-only.
+Defaults to today in Europe/Bucharest; to defaults to from. Bounds are inclusive
+local dates, converted to a half-open UTC interval (including DST rules), maximum
+367 inclusive days. Completed-at determines revenue/products/completed counts;
+created-at determines ACTIVE count; canceled-at determines CANCELED count.
+Offer counts are current inventory (independent of date range), excluding deleted
+offers; active must be orderable. Revenue is completed EUR totals only, commission
+10% rounded HALF_UP to cents, net = revenue - commission. These are metrics only:
+no fee collection, payout or payment infrastructure is added.
