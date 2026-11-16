@@ -79,3 +79,8 @@ each minute. Each retry locks the order and rechecks ACTIVE/cutoff, so validatio
 winning first cannot lead to a later refund. Success cancels and restores stock
 in the same transaction. Original failed HTTP replies remain replayable; fresh
 GET shows reconciliation outcome. Existing failed rows remain visible.
+
+WAS-49: GET /businesses/me/orders has the same bounded pagination and optional
+status filter as customer history. Business identity is resolved from the current
+owner, never a request parameter. It reuses all Order UI keys, adds customerName
+(first name + last initial) and never selects customer contact fields.
