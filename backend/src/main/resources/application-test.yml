@@ -1,4 +1,5 @@
 app:
+  payment-mode: mock
   jwt-secret: test-only-placeholder-at-least-32-bytes
 spring:
   jpa:

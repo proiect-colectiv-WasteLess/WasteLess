@@ -13,4 +13,5 @@ springdoc:
   swagger-ui:
     enabled: true
 app:
+  payment-mode: ${PAYMENT_MODE:mock}
   jwt-secret: ${JWT_SECRET:development-placeholder-never-use-in-production}

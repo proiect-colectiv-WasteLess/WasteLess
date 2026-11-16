@@ -64,7 +64,28 @@ public class MockPaymentGateway implements PaymentGateway {
   }
 
   private Result once(String key, String fingerprint, java.util.function.Supplier<Result> action) {
-    Saved saved = operations.computeIfAbsent(key, k -> new Saved(fingerprint, action.get()));
+    Saved saved =
+        operations.computeIfAbsent(
+            key,
+            k -> {
+              Saved created = new Saved(fingerprint, action.get());
+              if (org.springframework.transaction.support.TransactionSynchronizationManager
+                  .isActualTransactionActive()) {
+                org.springframework.transaction.support.TransactionSynchronizationManager
+                    .registerSynchronization(
+                        new org.springframework.transaction.support.TransactionSynchronization() {
+                          @Override
+                          public void afterCompletion(int status) {
+                            if (status != STATUS_COMMITTED) {
+                              operations.remove(key, created);
+                              if (key.startsWith("charge:") && created.result.reference() != null)
+                                captured.remove(created.result.reference());
+                            }
+                          }
+                        });
+              }
+              return created;
+            });
     if (!saved.fingerprint.equals(fingerprint)) return new Result(null, "IDEMPOTENCY_MISMATCH");
     return saved.result;
   }

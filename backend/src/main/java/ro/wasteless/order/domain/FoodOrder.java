@@ -30,6 +30,7 @@ public class FoodOrder {
   public OrderStatus status = OrderStatus.ACTIVE;
 
   @Column(updatable = false, columnDefinition = "char(3)")
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
   public String currency;
 
   @Column(updatable = false)

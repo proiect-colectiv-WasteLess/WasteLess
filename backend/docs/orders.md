@@ -22,3 +22,19 @@ order code depends only on that port. P2 currently defines charge/refund, not a
 separate authorization operation; charge represents immediate authorize+capture.
 Real-provider timeout/DB-commit reconciliation must be implemented by that adapter;
 this local provider does not claim distributed atomicity for a future remote bank.
+
+WAS-44: POST /api/v1/orders accepts offerId, integer quantity and paymentMethod.
+Idempotency-Key is required; WAS-45 supplies durable replay. Order.id in JSON is
+the WL reference, not the internal UUID. The response preserves Flutter keys;
+UTC timestamps and date-aware Bucharest pickup labels are computed by an injected
+Clock. Source image URLs are preserved; null means the frontend should use a placeholder.
+No Flutter files are modified.
+
+A conditional CatalogStockAdapter bridges the existing OfferStockPort reserve/release
+contract to the shared schema until B6 is installed. It guards pause, deletion,
+expiry and stock atomically in PostgreSQL and participates in the order transaction.
+The reader locks the source offer before snapshotting. A future B6 bean replaces
+this fallback automatically. Currency EUR and total NUMERIC(10,2) bounds are checked.
+Payment is authorize+capture through the common port; no provider class is imported.
+Authentication must supply a UUID principal and ROLE_CLIENT/ROLE_BUSINESS as defined
+by team A. No authentication bypass or replacement login endpoint is introduced.
