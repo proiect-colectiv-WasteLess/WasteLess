@@ -105,3 +105,9 @@ application API and survives offer deletion. Completion/cancellation publish the
 shared in-process events only after commit; replays do not publish duplicates.
 Listener failures are logged after commit without reporting the committed order
 as rolled back. These are local events, not a durable external message queue.
+
+WAS-52: GET /users/me/impact is CLIENT-only, aggregate-only and uses P14's
+customer/status index. Completed EUR orders contribute quantity meals, quantity *
+(originalUnitPrice - unitPrice) savings, and 1.2 kg CO2 per meal. ACTIVE/CANCELED
+orders never contribute. ImpactLevels is the single source for levels 1..5:
+0, 10, 25, 50, 100 meals; mealsToNextLevel is zero at maximum level.
