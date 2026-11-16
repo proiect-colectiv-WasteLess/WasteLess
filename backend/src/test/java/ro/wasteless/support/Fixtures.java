@@ -65,7 +65,7 @@ public final class Fixtures {
   public UUID order(UUID user, UUID business, UUID location, UUID offer) {
     var id = UUID.randomUUID();
     jdbc.update(
-        "insert into orders(id,reference,customer_user_id,business_id,business_location_id,offer_id,status,quantity,unit_price,original_unit_price,total_price,item_name,business_name,pickup_start_at,pickup_end_at,pickup_code) values (?,?,?,?,?,?,'ACTIVE',1,4,12,4,'Bag','Bakery',now()+interval '1 hour',now()+interval '3 hours','123456')",
+        "insert into orders(id,reference,customer_user_id,business_id,business_location_id,offer_id,status,quantity,unit_price,original_unit_price,total_price,item_name,business_name,pickup_start_at,pickup_end_at,pickup_code) values (?,?,?,?,?,?,'ACTIVE',1,4,12,4,'Bag','Bakery',now()+interval '1 hour',now()+interval '3 hours','1234')",
         id,
         "T" + id.toString().replace("-", "").substring(0, 19),
         user,
