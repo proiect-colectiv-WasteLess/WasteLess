@@ -15,6 +15,6 @@ public class OwnershipGuard {
 
   public void requireOwner(UUID ownerId) {
     if (!currentUser.id().equals(ownerId))
-      throw new DomainException(ErrorCode.FORBIDDEN, HttpStatus.FORBIDDEN, "Access denied");
+      throw new DomainException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND, "Resource not found");
   }
 }

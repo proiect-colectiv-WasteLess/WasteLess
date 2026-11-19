@@ -3,6 +3,7 @@ package ro.wasteless.common.api;
 public enum ErrorCode {
   VALIDATION_FAILED,
   UNAUTHORIZED,
+  INVALID_CREDENTIALS,
   FORBIDDEN,
   NOT_FOUND,
   CONFLICT,

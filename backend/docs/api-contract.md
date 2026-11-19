@@ -12,7 +12,8 @@ Existing Flutter display fields are preserved: Deal.pickupStart/pickupEnd are HH
 
 | Method | Path | Owner / result |
 |---|---|---|
-| POST | /auth/register, /auth/login | A; tokens and user |
+| POST | /auth/register | A; 201 public user, no automatic login |
+| POST | /auth/login | A; access/refresh tokens and user |
 | POST | /auth/refresh, /auth/logout | A; rotate/revoke refresh token |
 | POST | /auth/password-reset/request, /auth/password-reset/confirm | A; generic response, no account enumeration |
 | GET/PATCH/DELETE | /users/me | A; current user/update/account deletion |
