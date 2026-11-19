@@ -1,0 +1,15 @@
+CREATE INDEX ix_orders_customer_status ON orders(customer_user_id,status,created_at DESC);
+CREATE INDEX ix_orders_business_status ON orders(business_id,status,created_at DESC);
+CREATE INDEX ix_orders_created ON orders(created_at DESC);
+CREATE INDEX ix_orders_pickup_code ON orders(pickup_code) WHERE status='ACTIVE';
+CREATE INDEX ix_orders_location ON orders(business_location_id,business_id);
+CREATE INDEX ix_orders_offer ON orders(offer_id);
+CREATE INDEX ix_orders_completed_by ON orders(completed_by_user_id);
+CREATE INDEX ix_history_order ON order_status_history(order_id,created_at);
+CREATE INDEX ix_history_user ON order_status_history(changed_by_user_id);
+CREATE INDEX ix_payments_user ON payments(user_id);
+CREATE INDEX ix_payments_provider ON payments(provider_reference);
+CREATE UNIQUE INDEX uq_payment_idempotency ON payments(idempotency_key) WHERE idempotency_key IS NOT NULL;
+CREATE INDEX ix_refunds_order ON refunds(order_id);
+CREATE INDEX ix_refunds_payment ON refunds(payment_id);
+CREATE INDEX ix_idempotency_expiry ON idempotency_keys(expires_at);

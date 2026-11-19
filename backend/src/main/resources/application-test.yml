@@ -1,0 +1,5 @@
+app:
+  jwt-secret: test-only-placeholder-at-least-32-bytes
+spring:
+  jpa:
+    show-sql: false

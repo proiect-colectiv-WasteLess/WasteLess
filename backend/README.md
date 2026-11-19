@@ -1,34 +1,17 @@
-# WasteLess backend
+# WasteLess backend foundation
 
-Minimal Spring Boot application using Java 17 and Maven Wrapper.
-Only the application entry point and Spring Web are initialized.
-No database connection or feature modules are required to start it.
+Java 21 LTS, Spring Boot 4.1.2, PostgreSQL 16 + PostGIS 3.4. Maven Wrapper is retained. Feature packages: auth, user, business, offer, order, payment, media; expose feature contracts through api and keep domain/infrastructure internal. common never depends on features (ArchUnit).
 
-## Run
+## Local start
 
-Requires JDK 17 or newer. Maven is downloaded automatically on the first run,
-so an internet connection is needed initially.
+At repository root, copy `.env.example` to `.env` and replace local credentials/JWT secret. Run `docker compose up -d --build`. Check `docker compose ps`, `docker compose logs -f backend` and http://localhost:8080/actuator/health/readiness. Database is healthy before backend starts; Flyway applies automatically. Only loopback ports are published. Run `docker compose down` to stop; `docker compose down -v` permanently resets local data.
 
-From this directory on Windows:
+To run on the host instead: `docker compose up -d db`, set DB_URL/DB_USER/DB_PASSWORD in the process environment, then from backend run `./mvnw spring-boot:run` (Windows: `.\mvnw.cmd spring-boot:run`). Maven does not automatically load root .env; Compose does. Default profile dev uses local database defaults. Startup automatically applies migrations; JPA validates mappings and never creates schema.
 
-```powershell
-.\mvnw.cmd spring-boot:run
-```
+Profiles dev/test/prod: dev enables Swagger at /swagger-ui.html and /v3/api-docs; test is for isolated containers; prod requires explicit DB_URL, DB_USER, DB_PASSWORD, JWT_SECRET and disables docs. Set SPRING_PROFILES_ACTIVE=prod explicitly on deployment. CORS_ORIGINS is a comma-separated exact allowlist. STORAGE_PATH and PAYMENT_MODE are configuration hooks for feature owners. UTC Clock and JPA auditing are shared beans. ISO Instant values use the Boot Jackson defaults; money is BigDecimal.
 
-On Linux or macOS:
+## Verification
 
-```sh
-./mvnw spring-boot:run
-```
+`./mvnw verify` runs formatting, unit/architecture tests and real PostGIS integration tests. Docker is required; failures are not silently skipped. `./mvnw verify -DskipITs` runs the subset without Docker. `./mvnw spotless:apply` formats Java. CI runs full verification and builds an image on PRs; pushes a SHA-tagged GHCR image on main using GITHUB_TOKEN. Configure repository required check `Backend / verify` and package write access before first publish. No production deployment is performed by this workflow.
 
-The server listens on port 8080 by default. No API endpoints are defined yet,
-so a request to `/` returns HTTP 404.
-
-## Verify and package
-
-```powershell
-.\mvnw.cmd verify
-```
-
-This runs the generated application-context smoke test and creates
-`target/backend-0.0.1-SNAPSHOT.jar`.
+See [database contract](docs/database.md) and [API proposal](docs/api-contract.md). Authentication/features remain assigned to A/B/C; this branch provides infrastructure and schema, not completed business endpoints. Contract review/signoff, feature adapter tests, coverage thresholds and load benchmarks remain follow-ups. See [test support](docs/testing.md) and [development demo data](docs/demo-data.md). No task should be marked Done solely because this branch exists.
