@@ -112,13 +112,7 @@ public class AccountService implements UserAccountOperations {
   private User authenticateUser(String email, String password) {
     var found = users.lockByEmail(normalize(email));
     var user = found.orElse(null);
-    boolean validLength =
-        password != null && password.getBytes(StandardCharsets.UTF_8).length <= 72;
-    boolean matches =
-        passwords.matches(
-                validLength ? password : "invalid-password",
-                user == null ? dummyHash : user.passwordHash)
-            && validLength;
+    boolean matches = passwordMatches(password, user == null ? dummyHash : user.passwordHash);
     var now = clock.instant();
     if (user == null) throw credentials();
     if (user.status == UserStatus.LOCKED
@@ -244,7 +238,7 @@ public class AccountService implements UserAccountOperations {
   public void changePassword(String old, String password) {
     validatePassword(password);
     var user = locked(current.id());
-    if (!passwords.matches(old, user.passwordHash)) throw credentials();
+    if (!passwordMatches(old, user.passwordHash)) throw credentials();
     user.passwordHash = passwords.encode(password);
     user.passwordChangedAt = clock.instant();
     resets.findByUserIdAndUsedAtIsNull(user.getId()).forEach(t -> t.usedAt = clock.instant());
@@ -371,7 +365,7 @@ public class AccountService implements UserAccountOperations {
   public void deleteAccount(String password) {
     roles.lockAdministration();
     var u = locked(current.id());
-    if (!passwords.matches(password, u.passwordHash)) throw credentials();
+    if (!passwordMatches(password, u.passwordHash)) throw credentials();
     if (u.status == UserStatus.DELETED) return;
     protectLastAdmin(u, true);
     u.status = UserStatus.DELETED;
@@ -598,6 +592,11 @@ public class AccountService implements UserAccountOperations {
         || s.getBytes(StandardCharsets.UTF_8).length > 72)
       throw invalid(
           "Password must have 10 characters, a letter and a number, and at most 72 UTF-8 bytes");
+  }
+
+  private boolean passwordMatches(String raw, String encoded) {
+    boolean validLength = raw != null && raw.getBytes(StandardCharsets.UTF_8).length <= 72;
+    return passwords.matches(validLength ? raw : "invalid-password", encoded) && validLength;
   }
 
   private static String requiredName(Object v) {

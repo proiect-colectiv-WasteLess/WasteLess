@@ -779,6 +779,31 @@ class AccountIT extends PostgisIntegrationTest {
   }
 
   @Test
+  void malformedCredentialAndRoleInputsCannotCauseServerErrors() throws Exception {
+    String email = email();
+    var user = register(email, "CLIENT");
+    var session = login(email);
+    String auth = "Bearer " + access(session);
+    String multibyte = "é".repeat(40);
+    call(body(post("/api/v1/auth/login"), Map.of("email", email, "password", multibyte)))
+        .andExpect(status().isUnauthorized());
+    call(body(
+            post("/api/v1/users/me/password").header("Authorization", auth),
+            Map.of("currentPassword", multibyte, "newPassword", "NewSecret12345")))
+        .andExpect(status().isUnauthorized());
+    call(body(
+            delete("/api/v1/users/me").header("Authorization", auth),
+            Map.of("password", multibyte)))
+        .andExpect(status().isUnauthorized());
+    var administrator = admin(email());
+    call(body(
+            post("/api/v1/admin/users/" + id(user) + "/roles")
+                .header("Authorization", "Bearer " + access(administrator)),
+            Map.of("add", Collections.singletonList(null), "remove", List.of())))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void sessionsAreOwnedAndCannotBeRevokedAcrossUsers() throws Exception {
     String first = email();
     register(first, "CLIENT");

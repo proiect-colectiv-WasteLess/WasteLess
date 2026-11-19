@@ -104,8 +104,8 @@ public final class AccountRequests {
       @DecimalMin("0") @DecimalMax("99999.99") BigDecimal accuracyMeters) {}
 
   public record RoleChange(
-      @NotNull Set<@Pattern(regexp = "ROLE_(CLIENT|BUSINESS|ADMIN)") String> add,
-      @NotNull Set<@Pattern(regexp = "ROLE_(CLIENT|BUSINESS|ADMIN)") String> remove) {
+      @NotNull Set<@NotBlank @Pattern(regexp = "ROLE_(CLIENT|BUSINESS|ADMIN)") String> add,
+      @NotNull Set<@NotBlank @Pattern(regexp = "ROLE_(CLIENT|BUSINESS|ADMIN)") String> remove) {
     @AssertTrue(message = "A role cannot be both added and removed")
     public boolean isDisjoint() {
       return add == null || remove == null || Collections.disjoint(add, remove);
