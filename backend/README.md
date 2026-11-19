@@ -15,3 +15,6 @@ Profiles dev/test/prod: dev enables Swagger at /swagger-ui.html and /v3/api-docs
 `./mvnw verify` runs formatting, unit/architecture tests and real PostGIS integration tests. Docker is required; failures are not silently skipped. `./mvnw verify -DskipITs` runs the subset without Docker. `./mvnw spotless:apply` formats Java. CI runs full verification and builds an image on PRs; pushes a SHA-tagged GHCR image on main using GITHUB_TOKEN. Configure repository required check `Backend / verify` and package write access before first publish. No production deployment is performed by this workflow.
 
 See [database contract](docs/database.md) and [API proposal](docs/api-contract.md). Authentication/features remain assigned to A/B/C; this branch provides infrastructure and schema, not completed business endpoints. Contract review/signoff, feature adapter tests, coverage thresholds and load benchmarks remain follow-ups. See [test support](docs/testing.md) and [development demo data](docs/demo-data.md). No task should be marked Done solely because this branch exists.
+## Accounts and authentication
+
+See [the account API and integration handoff](docs/auth-accounts.md) for WAS-15 through WAS-27, request examples, security behavior, SMTP configuration and teammate integration points.
