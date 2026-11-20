@@ -26,6 +26,7 @@ class CatalogIT extends PostgisIntegrationTest {
   @Autowired WebApplicationContext context;
   @Autowired JsonMapper mapper;
   @Autowired OfferMaintenance maintenance;
+  @Autowired java.time.Clock clock;
   MockMvc mvc;
   Fixtures fixtures;
   UUID owner, business, location, category;
@@ -119,8 +120,21 @@ class CatalogIT extends PostgisIntegrationTest {
             .andExpect(jsonPath("$.stockLevel").value("low"))
             .andExpect(jsonPath("$.available").value(10))
             .andReturn();
-    return UUID.fromString(
-        mapper.readTree(result.getResponse().getContentAsString()).get("id").asString());
+    var id =
+        UUID.fromString(
+            mapper.readTree(result.getResponse().getContentAsString()).get("id").asString());
+    assertThat(clock.instant()).isEqualTo(TestFoundation.NOW);
+    var persisted =
+        jdbc.queryForMap(
+            "select o.status,o.deleted_at,o.quantity_available,o.pickup_end_at,b.status as business_status,b.deleted_at as business_deleted_at,c.slug,c.is_active,ST_Distance(l.location,ST_SetSRID(ST_MakePoint(26.1025,44.4268),4326)::geography) as distance_m from offers o join businesses b on b.id=o.business_id join offer_categories c on c.id=o.category_id join business_locations l on l.id=o.location_id where o.id=?",
+            id);
+    assertThat(persisted.get("status")).as("Published fixture: %s", persisted).isEqualTo("ACTIVE");
+    assertThat(persisted.get("slug")).as("Published fixture: %s", persisted).isEqualTo("bakery");
+    assertThat(persisted.get("is_active")).as("Published fixture: %s", persisted).isEqualTo(true);
+    assertThat(((Number) persisted.get("distance_m")).doubleValue())
+        .as("Published fixture: %s", persisted)
+        .isLessThan(1);
+    return id;
   }
 
   @Test
