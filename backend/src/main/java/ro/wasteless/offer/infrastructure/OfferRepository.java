@@ -7,7 +7,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import ro.wasteless.offer.domain.Offer;
 
-public interface OfferRepository extends JpaRepository<Offer, UUID> {
+public interface OfferRepository
+    extends JpaRepository<Offer, UUID>, JpaSpecificationExecutor<Offer> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("select o from Offer o where o.id=:id")
   Optional<Offer> lockById(UUID id);
