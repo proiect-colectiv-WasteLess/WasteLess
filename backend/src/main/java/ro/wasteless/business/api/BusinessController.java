@@ -15,10 +15,15 @@ import ro.wasteless.business.infrastructure.BusinessRepository;
 public class BusinessController {
   private final BusinessRepository businesses;
   private final BusinessAccess access;
+  private final ro.wasteless.business.infrastructure.BusinessLocationRepository locations;
 
-  public BusinessController(BusinessRepository businesses, BusinessAccess access) {
+  public BusinessController(
+      BusinessRepository businesses,
+      BusinessAccess access,
+      ro.wasteless.business.infrastructure.BusinessLocationRepository locations) {
     this.businesses = businesses;
     this.access = access;
+    this.locations = locations;
   }
 
   @GetMapping("/me")
@@ -45,7 +50,11 @@ public class BusinessController {
         b.coverUrl,
         b.ratingAvg,
         b.ratingCount,
-        b.isVerified);
+        b.isVerified,
+        locations
+            .findByBusinessIdAndIsPrimaryTrue(b.getId())
+            .map(l -> new PublicLocation(l.label, l.city, l.countryCode))
+            .orElse(null));
   }
 
   @PatchMapping("/me")
@@ -80,7 +89,8 @@ public class BusinessController {
         b.ratingAvg,
         b.ratingCount,
         b.isVerified,
-        b.status);
+        b.status,
+        locations.findByBusinessIdAndIsPrimaryTrue(b.getId()).orElse(null));
   }
 
   public record ProfilePatch(
@@ -105,7 +115,8 @@ public class BusinessController {
       BigDecimal ratingAvg,
       int ratingCount,
       boolean isVerified,
-      String status) {}
+      String status,
+      ro.wasteless.business.domain.BusinessLocation primaryLocation) {}
 
   public record PublicProfile(
       UUID id,
@@ -116,5 +127,8 @@ public class BusinessController {
       String coverUrl,
       BigDecimal ratingAvg,
       int ratingCount,
-      boolean isVerified) {}
+      boolean isVerified,
+      PublicLocation primaryLocation) {}
+
+  public record PublicLocation(String label, String city, String countryCode) {}
 }
