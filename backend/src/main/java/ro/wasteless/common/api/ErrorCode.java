@@ -2,6 +2,7 @@ package ro.wasteless.common.api;
 
 public enum ErrorCode {
   VALIDATION_FAILED,
+  MISSING_LOCATION,
   UNAUTHORIZED,
   FORBIDDEN,
   NOT_FOUND,
