@@ -1,11 +1,9 @@
 package ro.wasteless.offer.infrastructure;
 
 import java.math.*;
-import java.net.URI;
 import java.sql.*;
 import java.time.*;
 import java.util.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,17 +26,14 @@ public class DiscoveryService {
   private final NamedParameterJdbcTemplate jdbc;
   private final CurrentUser current;
   private final Clock clock;
-  private final String publicBaseUrl;
+  private final DealMapper dealMapper;
 
   public DiscoveryService(
-      NamedParameterJdbcTemplate jdbc,
-      CurrentUser current,
-      Clock clock,
-      @Value("${app.public-base-url:http://localhost:8080}") String publicBaseUrl) {
+      NamedParameterJdbcTemplate jdbc, CurrentUser current, Clock clock, DealMapper dealMapper) {
     this.jdbc = jdbc;
     this.current = current;
     this.clock = clock;
-    this.publicBaseUrl = publicBaseUrl;
+    this.dealMapper = dealMapper;
   }
 
   public PageResponse<DealResponse> nearby(DiscoveryRequest r) {
@@ -104,7 +99,7 @@ public class DiscoveryService {
                 + order
                 + ",o.id asc limit :limit offset :offset",
             p,
-            this::map);
+            dealMapper);
     return new PageResponse<>(
         rows, r.page(), r.size(), count, (int) ((count + r.size() - 1) / r.size()));
   }
@@ -122,31 +117,10 @@ public class DiscoveryService {
                 + VISIBLE
                 + " and o.id=:id",
             p,
-            this::map)
+            dealMapper)
         .stream()
         .findFirst()
         .orElseThrow(BusinessAccess::notFound);
-  }
-
-  private DealResponse map(ResultSet rs, int row) throws SQLException {
-    String image = rs.getString("image_url");
-    if (image == null || image.isBlank()) image = publicBaseUrl + "/media/placeholder.png";
-    else if (!URI.create(image).isAbsolute())
-      image = URI.create(publicBaseUrl + "/").resolve(image).toString();
-    return new DealResponse(
-        rs.getObject("id", UUID.class),
-        rs.getString("title"),
-        rs.getString("business_name"),
-        rs.getBigDecimal("original_price"),
-        rs.getBigDecimal("price"),
-        BigDecimal.valueOf(rs.getDouble("distance_m") / 1000).setScale(2, RoundingMode.HALF_UP),
-        Offer.time(rs.getTimestamp("pickup_start_at").toInstant()),
-        Offer.time(rs.getTimestamp("pickup_end_at").toInstant()),
-        rs.getInt("quantity_available"),
-        rs.getBigDecimal("rating_avg"),
-        image,
-        OfferCategory.frontendName(rs.getString("slug")),
-        Optional.ofNullable(rs.getString("description")).orElse(""));
   }
 
   private double[] coordinates(Double lat, Double lng) {
