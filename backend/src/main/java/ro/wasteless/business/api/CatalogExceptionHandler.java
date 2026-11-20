@@ -7,8 +7,19 @@ import org.springframework.web.bind.annotation.*;
 import ro.wasteless.common.api.*;
 
 @Order(-10)
-@RestControllerAdvice(basePackages = {"ro.wasteless.business.api", "ro.wasteless.offer.api"})
+@RestControllerAdvice(
+    basePackages = {
+      "ro.wasteless.business.api",
+      "ro.wasteless.offer.api",
+      "ro.wasteless.media.api"
+    })
 public class CatalogExceptionHandler {
+  @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+  public ProblemDetail tooLarge(Exception e) {
+    return ProblemResponses.of(
+        HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED, "Image exceeds 5 MB");
+  }
+
   @ExceptionHandler(CatalogValidationException.class)
   public ProblemDetail validation(CatalogValidationException e) {
     var p =

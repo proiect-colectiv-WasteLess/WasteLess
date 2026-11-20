@@ -1,6 +1,10 @@
 spring:
   application:
     name: WasteLess
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   profiles:
     default: dev
   datasource:
@@ -33,6 +37,13 @@ springdoc:
   swagger-ui:
     enabled: false
 app:
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+  storage-mode: ${STORAGE_MODE:local}
+  s3:
+    bucket: ${S3_BUCKET:}
+    public-url: ${S3_PUBLIC_URL:}
+    region: ${AWS_REGION:eu-central-1}
+    endpoint: ${S3_ENDPOINT:}
   jwt-secret: ${JWT_SECRET}
   cors-origins: ${CORS_ORIGINS:}
   storage-path: ${STORAGE_PATH:./data/media}
