@@ -13,6 +13,16 @@ import ro.wasteless.common.api.PageResponse;
 public class BusinessOfferController {
   private final BusinessOfferService offers;
 
+  @PostMapping("/{id}/pause")
+  public BusinessOfferResponse pause(@PathVariable UUID id) {
+    return offers.pause(id);
+  }
+
+  @PostMapping("/{id}/resume")
+  public BusinessOfferResponse resume(@PathVariable UUID id) {
+    return offers.resume(id);
+  }
+
   public BusinessOfferController(BusinessOfferService offers) {
     this.offers = offers;
   }

@@ -132,6 +132,18 @@ public class BusinessOfferService {
     owned(id).delete(clock.instant());
   }
 
+  public BusinessOfferResponse pause(UUID id) {
+    var o = owned(id);
+    o.pause(clock.instant());
+    return response(o);
+  }
+
+  public BusinessOfferResponse resume(UUID id) {
+    var o = owned(id);
+    o.resume(clock.instant());
+    return response(o);
+  }
+
   private Offer owned(UUID id) {
     var business = access.lockCurrent().getId();
     return offers.lockOwned(id, business).orElseThrow(BusinessAccess::notFound);
