@@ -1,6 +1,6 @@
 # API contract proposal (WAS-68)
 
-Review required from A/B/C and the frontend owner before endpoint implementation. This file specifies the intended contract; feature endpoints below are NOT implemented by this foundation. Generated /v3/api-docs currently describes implemented endpoints only. Health and the security boundary are operational.
+Review required from A/B/C and the frontend owner. The platform foundation and B's catalog/media endpoints are implemented; other ownership rows remain proposals until their feature branches are merged. See [catalog delivery and remaining dependencies](catalog.md) and [image storage](media.md). Generated /v3/api-docs describes implemented endpoints only.
 
 ## Wire rules
 
@@ -33,7 +33,7 @@ Existing Flutter display fields are preserved: Deal.pickupStart/pickupEnd are HH
 | GET | /businesses/me/orders | C; PageResponse, status filter |
 | POST | /businesses/me/orders/{id}/validate-pickup | C; body {code}, completed Order |
 | GET | /businesses/me/dashboard | C; aggregates |
-| POST | /media | B; authenticated multipart file, {url} |
+| POST | /media/images | B; BUSINESS multipart file, {url} |
 
 Login/register/refresh will be explicitly permitted by A when handlers and rate limiting are delivered. Foundation denies all unspecified routes by default; no placeholder login bypass is enabled. JWT validation/filter implementation belongs to A. The principal name must be the user UUID, used by CurrentUser. B implements OfferStockPort/StoragePort, C implements PaymentGateway/IdempotencyStore. Shared interfaces contain no feature dependencies. reserve must atomically fail on insufficient stock; claim is an atomic unique-key insert, never a check-then-insert. Payment providers must honor passed idempotency keys.
 
@@ -59,4 +59,4 @@ POST /orders body: {offerId,quantity,paymentMethod}; require Idempotency-Key. Sa
 
 RFC 9457 application/problem+json, status/title/detail plus code/message/traceId/fieldErrors. Each field error is {field,message}; never echo rejected secrets. X-Request-Id is accepted only as 1–64 letters/digits/underscore/hyphen; otherwise generated and returned.
 
-400 VALIDATION_FAILED; 401 UNAUTHORIZED; 403 FORBIDDEN; 404 NOT_FOUND; 409 CONFLICT/OFFER_SOLD_OUT/OFFER_NOT_AVAILABLE/ORDER_NOT_CANCELABLE/INVALID_PICKUP_CODE/IDEMPOTENCY_MISMATCH; 429 RATE_LIMITED; 502 REFUND_FAILED. Failures must not expose SQL, tokens or personal coordinates.
+400 VALIDATION_FAILED/MISSING_LOCATION; catalog field validation uses 422 VALIDATION_FAILED; unsupported image content uses 415 VALIDATION_FAILED; 401 UNAUTHORIZED; 403 FORBIDDEN; 404 NOT_FOUND; 409 CONFLICT/OFFER_SOLD_OUT/OFFER_NOT_AVAILABLE/ORDER_NOT_CANCELABLE/INVALID_PICKUP_CODE/IDEMPOTENCY_MISMATCH; 429 RATE_LIMITED; 502 REFUND_FAILED. Failures must not expose SQL, tokens or personal coordinates.

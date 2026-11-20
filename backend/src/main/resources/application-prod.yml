@@ -10,3 +10,5 @@ server:
   error:
     include-message: never
     include-stacktrace: never
+app:
+  storage-mode: ${STORAGE_MODE:s3}
