@@ -33,7 +33,7 @@ public class BusinessProvisioning {
             event.userId());
     if (businessRole == null
         || businessRole == 0
-        || businesses.findByOwnerUserIdAndDeletedAtIsNull(event.userId()).isPresent()) return;
+        || businesses.findByOwnerUserId(event.userId()).isPresent()) return;
     if (event.businessName().trim().length() > 120)
       throw new IllegalArgumentException("Invalid business name in registration event");
     var b = businesses.saveAndFlush(new Business(event.userId(), event.businessName().trim()));

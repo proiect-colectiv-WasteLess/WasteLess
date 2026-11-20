@@ -1,5 +1,7 @@
 # WasteLess backend foundation
 
+Catalog/business/media implementation and remaining teammate dependencies: [catalog delivery](docs/catalog.md). Image storage and S3 configuration: [media](docs/media.md).
+
 Java 21 LTS, Spring Boot 4.1.2, PostgreSQL 16 + PostGIS 3.4. Maven Wrapper is retained. Feature packages: auth, user, business, offer, order, payment, media; expose feature contracts through api and keep domain/infrastructure internal. common never depends on features (ArchUnit).
 
 ## Local start

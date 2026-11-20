@@ -12,6 +12,10 @@ import ro.wasteless.common.api.*;
 @Service
 @Transactional
 public class LocationService {
+  public void lockCurrent() {
+    access.lockCurrent();
+  }
+
   private final BusinessAccess access;
   private final BusinessLocationRepository locations;
   private final JdbcTemplate jdbc;
@@ -59,6 +63,8 @@ public class LocationService {
     l.city = r.city().trim();
     l.postalCode = trim(r.postalCode());
     l.countryCode = r.countryCode().toUpperCase(Locale.ROOT);
+    if (!Set.of(Locale.getISOCountries()).contains(l.countryCode))
+      throw new CatalogValidationException("countryCode", "Must be an ISO 3166-1 country code");
     l.latitude = r.latitude();
     l.longitude = r.longitude();
     l.isPrimary = primary;

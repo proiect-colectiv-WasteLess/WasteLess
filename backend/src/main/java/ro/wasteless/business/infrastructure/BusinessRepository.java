@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.*;
 import ro.wasteless.business.domain.Business;
 
 public interface BusinessRepository extends JpaRepository<Business, UUID> {
+  Optional<Business> findByOwnerUserId(UUID owner);
+
   Optional<Business> findByOwnerUserIdAndDeletedAtIsNull(UUID owner);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

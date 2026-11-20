@@ -36,7 +36,9 @@ public class LocationController {
   }
 
   @PatchMapping("/locations/{id}")
+  @org.springframework.transaction.annotation.Transactional
   public BusinessLocation update(@PathVariable UUID id, @RequestBody Map<String, Object> patch) {
+    locations.lockCurrent();
     var old =
         locations.list().stream()
             .filter(l -> l.id.equals(id))

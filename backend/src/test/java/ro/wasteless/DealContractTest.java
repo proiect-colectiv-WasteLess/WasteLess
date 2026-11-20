@@ -13,6 +13,38 @@ import tools.jackson.databind.json.JsonMapper;
 
 class DealContractTest {
   @Test
+  void businessOfferBooleanAndDisplayKeysMatchFlutter() {
+    var offer = OfferLifecycleTest.offer();
+    offer.title = "Bakery bag";
+    offer.imageUrl = "https://example.test/bag.png";
+    offer.pause(OfferLifecycleTest.NOW);
+    var response = ro.wasteless.offer.api.BusinessOfferResponse.from(offer, "Bakery");
+    var json = JsonMapper.builder().build().valueToTree(response);
+    var names = new HashSet<String>();
+    json.propertyNames().forEach(names::add);
+    assertThat(names)
+        .containsExactlyInAnyOrder(
+            "id",
+            "title",
+            "imageAsset",
+            "available",
+            "price",
+            "originalPrice",
+            "stockLevel",
+            "category",
+            "description",
+            "pickupWindow",
+            "isPaused",
+            "status");
+    assertThat(json.get("isPaused").isBoolean()).isTrue();
+    assertThat(json.get("isPaused").asBoolean()).isTrue();
+    assertThat(json.get("price").isNumber()).isTrue();
+    assertThat(json.get("available").isIntegralNumber()).isTrue();
+    assertThat(json.get("stockLevel").asString()).isIn("low", "medium", "high");
+    assertThat(json.get("status").asString()).isEqualTo("PAUSED");
+  }
+
+  @Test
   void immutableSnapshotMatchesFlutterKeysTypesAndBucharestTime() throws Exception {
     var rs = mock(ResultSet.class);
     var id = UUID.randomUUID();
