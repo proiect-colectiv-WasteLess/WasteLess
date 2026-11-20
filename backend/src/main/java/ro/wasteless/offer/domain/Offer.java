@@ -25,7 +25,8 @@ public class Offer extends BaseEntity {
   @Column(precision = 10, scale = 2)
   public BigDecimal price;
 
-  @Column(columnDefinition = "char(3)")
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
+  @Column(columnDefinition = "char(3)", length = 3)
   public String currency = "EUR";
 
   public int quantityTotal;

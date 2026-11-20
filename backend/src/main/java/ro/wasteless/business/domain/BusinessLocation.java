@@ -19,7 +19,8 @@ public class BusinessLocation {
   public String city;
   public String postalCode;
 
-  @Column(columnDefinition = "char(2)")
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
+  @Column(columnDefinition = "char(2)", length = 2)
   public String countryCode;
 
   @Column(precision = 9, scale = 6)
