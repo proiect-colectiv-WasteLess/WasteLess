@@ -1,0 +1,67 @@
+name: AI inference
+
+on:
+  push:
+    paths:
+      - 'ai/**'
+      - '.github/workflows/ai.yml'
+  pull_request:
+    paths:
+      - 'ai/**'
+      - '.github/workflows/ai.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ai
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.9'
+      - run: uv sync --locked --python 3.12.16
+      - run: make lint test train
+      - run: |
+          snapshot=$(find var/datasets -name '*.parquet' -print -quit)
+          uv run --locked python -m wasteless_ml.report var/candidates/0.1.0 "$snapshot"
+          uv run --locked python -m wasteless_ml.registry promote var/candidates/0.1.0
+          uv run --locked python -m wasteless_ml.openapi --check
+      - name: Build and verify the inference image
+        run: |
+          image="wasteless-ai:git-${GITHUB_SHA}"
+          docker build -t "$image" .
+          test "$(docker image inspect --format '{{.Size}}' "$image")" -lt "$((600 * 1024 * 1024))"
+          test "$(docker run --rm --entrypoint id "$image" -u)" -eq 10001
+          if docker run --rm "$image" > missing-model.log 2>&1; then
+            exit 1
+          fi
+          rg 'No promoted model' missing-model.log
+          docker run -d --name wasteless-ai -p 127.0.0.1:8000:8000 -e LOG_LEVEL=WARNING \
+            -v "$PWD/var/registry:/models:ro" "$image"
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/health; then exit 0; fi
+            sleep 1
+          done
+          docker logs wasteless-ai
+          exit 1
+      - name: Run load smoke against the container
+        run: |
+          chmod a+w docs
+          docker run --rm --network host -v "$PWD:/work" -w /work grafana/k6:1.7.0 run tests/load.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-evaluation-and-load
+          path: |
+            ai/docs/load-report.md
+            ai/var/candidates/0.1.0/evaluation.md

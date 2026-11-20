@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ml-lint
+        name: WasteLess ML lint and format
+        entry: make -C ai lint
+        language: system
+        files: ^ai/.*\.py$
+        pass_filenames: false

@@ -1,0 +1,27 @@
+[project]
+name = "wasteless-ml"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "boto3>=1.37,<2",
+  "fastapi>=0.115,<1",
+  "filelock>=3.20,<4",
+  "joblib>=1.4,<2",
+  "lightgbm>=4.6,<5",
+  "numpy>=2.2,<2.4",
+  "pandas>=2.2,<3",
+  "prometheus-client>=0.21,<1",
+  "psycopg[binary]>=3.2,<4",
+  "pyarrow>=19,<25",
+  "scikit-learn>=1.6,<2",
+  "uvicorn>=0.34,<1",
+]
+
+[dependency-groups]
+dev = ["black>=25,<27", "ruff>=0.11,<1", "pytest>=8,<10", "httpx>=0.28,<1", "pre-commit>=4,<5"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

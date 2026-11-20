@@ -1,0 +1,39 @@
+name: AI daily drift
+
+on:
+  schedule:
+    - cron: '22 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    if: vars.AI_DRIFT_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ai
+    env:
+      ARTIFACT_URI: ${{ vars.ARTIFACT_URI }}
+      S3_ENDPOINT_URL: ${{ vars.S3_ENDPOINT_URL }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AI_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AI_AWS_SECRET_ACCESS_KEY }}
+      DB_URL_READONLY: ${{ secrets.DB_URL_READONLY }}
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.9'
+      - run: uv sync --locked --python 3.12.16
+      - run: uv run --locked python -m wasteless_ml.drift --database --window-days 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-drift-reports
+          path: ai/var/drift/

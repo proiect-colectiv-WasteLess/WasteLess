@@ -1,0 +1,334 @@
+{
+  "components": {
+    "schemas": {
+      "Batch": {
+        "additionalProperties": false,
+        "properties": {
+          "offers": {
+            "items": {
+              "$ref": "#/components/schemas/Offer"
+            },
+            "maxItems": 50,
+            "title": "Offers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "offers"
+        ],
+        "title": "Batch",
+        "type": "object"
+      },
+      "Forecast": {
+        "properties": {
+          "expectedLeftoverUnits": {
+            "title": "Expectedleftoverunits",
+            "type": "number"
+          },
+          "generatedAt": {
+            "format": "date-time",
+            "title": "Generatedat",
+            "type": "string"
+          },
+          "modelVersion": {
+            "title": "Modelversion",
+            "type": "string"
+          },
+          "offerId": {
+            "title": "Offerid",
+            "type": "string"
+          },
+          "riskLevel": {
+            "$ref": "#/components/schemas/Risk"
+          },
+          "unsoldProbability": {
+            "title": "Unsoldprobability",
+            "type": "number"
+          }
+        },
+        "required": [
+          "offerId",
+          "expectedLeftoverUnits",
+          "unsoldProbability",
+          "riskLevel",
+          "modelVersion",
+          "generatedAt"
+        ],
+        "title": "Forecast",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Offer": {
+        "additionalProperties": false,
+        "properties": {
+          "businessSellThrough": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Businesssellthrough"
+          },
+          "businessSize": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Businesssize"
+          },
+          "category": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Category",
+            "type": "string"
+          },
+          "categoryHourSellThrough": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoryhoursellthrough"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "title": "Createdat",
+            "type": "string"
+          },
+          "offerId": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Offerid",
+            "type": "string"
+          },
+          "originalPrice": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Originalprice"
+          },
+          "pickupEnd": {
+            "format": "date-time",
+            "title": "Pickupend",
+            "type": "string"
+          },
+          "pickupStart": {
+            "format": "date-time",
+            "title": "Pickupstart",
+            "type": "string"
+          },
+          "price": {
+            "minimum": 0.0,
+            "title": "Price",
+            "type": "number"
+          },
+          "quantityAvailable": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Quantityavailable",
+            "type": "integer"
+          },
+          "quantityTotal": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Quantitytotal",
+            "type": "integer"
+          },
+          "scoredAt": {
+            "format": "date-time",
+            "title": "Scoredat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "offerId",
+          "price",
+          "category",
+          "quantityTotal",
+          "quantityAvailable",
+          "pickupStart",
+          "pickupEnd",
+          "createdAt",
+          "scoredAt"
+        ],
+        "title": "Offer",
+        "type": "object"
+      },
+      "Predictions": {
+        "properties": {
+          "predictions": {
+            "items": {
+              "$ref": "#/components/schemas/Forecast"
+            },
+            "title": "Predictions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "predictions"
+        ],
+        "title": "Predictions",
+        "type": "object"
+      },
+      "Risk": {
+        "enum": [
+          "LOW",
+          "MEDIUM",
+          "HIGH"
+        ],
+        "title": "Risk",
+        "type": "string"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "WasteLess Unsold Offer Prediction",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/model-info": {
+      "get": {
+        "operationId": "model_info_model_info_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Model Info"
+      }
+    },
+    "/predict": {
+      "post": {
+        "operationId": "predict_predict_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Batch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Predictions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Predict"
+      }
+    }
+  }
+}

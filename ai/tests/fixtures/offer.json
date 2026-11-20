@@ -1,0 +1,15 @@
+{
+  "offerId": "offer-sample",
+  "price": 7.5,
+  "originalPrice": null,
+  "category": "bakery",
+  "quantityTotal": 12,
+  "quantityAvailable": 9,
+  "pickupStart": "2026-01-02T17:00:00Z",
+  "pickupEnd": "2026-01-02T19:00:00Z",
+  "createdAt": "2026-01-01T12:00:00Z",
+  "scoredAt": "2026-01-02T13:00:00Z",
+  "businessSellThrough": null,
+  "categoryHourSellThrough": null,
+  "businessSize": null
+}
