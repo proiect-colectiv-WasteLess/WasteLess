@@ -130,17 +130,20 @@ public class BusinessOfferService {
 
   public void delete(UUID id) {
     owned(id).delete(clock.instant());
+    offers.flush();
   }
 
   public BusinessOfferResponse pause(UUID id) {
     var o = owned(id);
     o.pause(clock.instant());
+    offers.flush();
     return response(o);
   }
 
   public BusinessOfferResponse resume(UUID id) {
     var o = owned(id);
     o.resume(clock.instant());
+    offers.flush();
     return response(o);
   }
 

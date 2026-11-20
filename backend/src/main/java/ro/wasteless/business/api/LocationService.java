@@ -92,6 +92,7 @@ public class LocationService {
       locations.findByBusinessIdOrderByCreatedAtAscIdAsc(business.getId()).stream()
           .findFirst()
           .ifPresent(x -> x.isPrimary = true);
+    locations.flush();
   }
 
   private static String trim(String s) {
